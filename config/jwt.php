@@ -70,7 +70,7 @@ return [
         |
         */
 
-        'private' => env('JWT_PRIVATE_KEY','private.pem'),
+        'private' => env('JWT_PRIVATE_KEY'),
 
         /*
         |--------------------------------------------------------------------------
