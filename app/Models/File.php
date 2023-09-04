@@ -16,4 +16,9 @@ class File extends Model
         return $this->belongsTo(User::class,'avatar','uuid');
     }
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class,'metadata.image','uuid');
+    }
+
 }

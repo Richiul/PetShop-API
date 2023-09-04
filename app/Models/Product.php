@@ -24,4 +24,9 @@ class Product extends Model
     {
         return $this->hasOne(File::class,'uuid','metadata.image');
     }
+
+    public function orders()
+    {
+        return $this->belongsTo(Order::class,'products.product','uuid');
+    }
 }

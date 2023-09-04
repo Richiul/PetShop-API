@@ -22,14 +22,8 @@ class PasswordResetFactory extends Factory
     public function definition(): array
     {
         return [
-            'email'=>function()
-            {
-                return User::factory()->create()->id;
-            },
-            'token'=> function()
-            {
-                return JwtToken::factory()->create()->unique_id;
-            },
+            'email'=>User::inRandomOrder()->first()->uuid,
+            'token'=> JwtToken::inRandomOrder()->first()->unique_id,
             'created_at'=>now()
         ];
     }

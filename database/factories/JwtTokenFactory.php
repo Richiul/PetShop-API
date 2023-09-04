@@ -23,10 +23,6 @@ class JwtTokenFactory extends Factory
         
         return [
             'unique_id' => uniqid(),
-            'user_id' => function()
-            {
-                return User::factory()->create()->id;
-            },
             'token_title' => fake()->title(),
             'created_at' =>now(),
             'updated_at' =>now()

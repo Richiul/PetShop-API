@@ -11,4 +11,9 @@ class Brand extends Model
 
     protected $fillable = ['title','slug'];
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class,'metadata.brand','uuid');
+    }
+
 }

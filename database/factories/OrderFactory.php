@@ -24,21 +24,16 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        $products = ['product'=> function() {
-            return Product::factory()->create()->uuid;
-        },'quantity'=>fake()->numberBetween(1,15)];
+        $products = ['product'=> Product::factory()->create()->uuid,'quantity'=>fake()->numberBetween(1,15)];
 
         $address = ['billing'=>fake()->address(),'shipping'=>fake()->address()];
-
+        
         return [
             'user_id' => function()
             {
                 return User::factory()->create()->id;
             },
-            'order_status_id' => function()
-            {
-                return OrderStatus::factory()->create()->id;
-            },
+            'order_status_id' => OrderStatus::inRandomOrder()->first()->id,
             'payment_id' =>function()
             {
                 return Payment::factory()->create()->id;

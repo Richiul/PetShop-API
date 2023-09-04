@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\File;
 use App\Models\Product;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -22,13 +23,13 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $metadata = ['brand'=>function(){return Brand::factory()->create()->uuid;},
-        'image'=>function(){return Brand::factory()->create()->uuid;}];
+        
+        $metadata = ['brand'=>Brand::inRandomOrder()->first()->uuid,
+        'image'=> File::factory()->create()->uuid];
 
         return [
             'uuid' => uniqid(),
-            'category_id'=>function()
-            {return Category::factory()->create()->uuid;},
+            'category_id'=> Category::inRandomOrder()->first()->uuid,
             'title' => fake()->colorName(),
             'price' => fake()->numberBetween(200,2000),
             'description'=>fake()->text(50),
