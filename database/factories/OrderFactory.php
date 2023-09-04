@@ -29,10 +29,7 @@ class OrderFactory extends Factory
         $address = ['billing'=>fake()->address(),'shipping'=>fake()->address()];
         
         return [
-            'user_id' => function()
-            {
-                return User::factory()->create()->id;
-            },
+            
             'order_status_id' => OrderStatus::inRandomOrder()->first()->id,
             'payment_id' =>function()
             {

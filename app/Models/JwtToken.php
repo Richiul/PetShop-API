@@ -10,7 +10,9 @@ class JwtToken extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['token_title'];
+    protected $fillable = ['user_id','unique_id','token_title'];
+
+    protected $hidden = ['unique_id'];
 
     public function user()
     {
