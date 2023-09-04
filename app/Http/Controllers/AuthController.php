@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\JwtToken;
+use App\Models\PasswordReset;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -14,10 +15,10 @@ use Ramsey\Uuid\Uuid;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('jwt.auth', ['except' => ['login', 'register','forgotPassword','resetPasswordToken']]);
+    // }
 
     public function login(Request $request)
     {
@@ -30,16 +31,33 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $credentials = $request->only('email','password');
-       if( Auth::attempt($credentials))
-       {
-        $user = Auth::user();
-        $token = $this->createJwtTokenDb($user);
+        $user = User::where('email', $request->email)->first();
 
+        if (!$user) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        if (!password_verify($request->password, $user->password)) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        try {
+            // Generate a JWT token for the user
+            $token = JWTAuth::fromUser($user);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Failed to generate token'], 500);
+        }
+
+       if($token)
+       {
+        $token = $this->createJwtTokenDb($user);
        }else
             return response()->json([
                 'message' => 'Unauthorized',
             ], 401);
+
+        $user->last_login_at = now();
+        $user->save();
 
         return response()->json([
             'user' => $user,
@@ -97,7 +115,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function createJwtTokenDb($user)
+    public function createJwtTokenDb($user,$type='Login')
     {
         if(!JwtToken::where('user_id',$user->id)->first())
         {
@@ -106,7 +124,7 @@ class AuthController extends Controller
         JwtToken::create([
             'user_id'=> $user->id,
             'unique_id' => $tokenFromUser,
-            'token_title' => 'Login token'
+            'token_title' => $type.' token'
         ]);
         return $tokenFromUser;
     }
@@ -122,18 +140,66 @@ class AuthController extends Controller
     {
         $user = Auth::user();
         
-        $dbtToken = JwtToken::where('user_id',$user->id)->first();
-
-        if($dbtToken)
+        if($user)
         {
-            $dbtToken->delete();
-        }
+        $dbtToken = JwtToken::where('user_id',$user->id)->first();
+        if($dbtToken->token_title == 'Login token')
+        {
+
+        $dbtToken->delete();
 
         $requestToken = JWTAuth::parseToken();
         $requestToken->invalidate();
-        
+
         return response()->json([
             'message' => 'Successfully logged out',
         ]);
+    
+    }
+}
+
+else
+{
+    return response()->json(['error'=>'Unauthenticated.']);
+}
+}
+
+    public function forgotPassword(Request $request)
+    {
+        $exists = User::where('email',$request->email)->first();
+
+        if($exists)
+            {
+                $this->createJwtTokenDb($exists,'Forgot Password');
+            }
+        else
+        return response()->json([
+            'message' => 'Email doesn\'t exist',
+        ],422);
+    }
+
+    public function resetPasswordToken(Request $request)
+    {
+        $token = JwtToken::where('unique_id',$request->token)->first();
+        $user = $token->user()->first();
+
+        if($request->password == $request->password_confirmation)
+        {
+            $user->password = $request->password;
+            $user->save();
+
+            PasswordReset::create(['email' => $request->email,'token' => $token->unique_id,'created_at'=>now()]);
+            $token->delete();
+            return response()->json([
+                'message' => 'Password reset successfully',
+            ],200);
+        }
+        else
+        return response()->json([
+            'message' => 'Password doesn\'t match',
+        ],422);
+
+        
+        
     }
 }

@@ -18,5 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(AuthController::class)->group(function () {
     Route::post('v1/user/login', 'login');
     Route::post('v1/user/create', 'register');
-    Route::get('v1/user/logout', 'logout')->middleware(['remove.token']);
+    Route::post('v1/user/forgot-password', 'forgotPassword');
+    Route::post('v1/user/reset-password-token', 'resetPasswordToken');
+    Route::get('v1/user/logout', 'logout')->middleware(['remove.token','auth:api']);
 });
