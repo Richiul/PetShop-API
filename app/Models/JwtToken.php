@@ -10,7 +10,7 @@ class JwtToken extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','unique_id','token_title'];
+    protected $fillable = ['user_id','unique_id','token_title','expires_at','last_used_at','refreshed_at'];
 
     protected $hidden = ['unique_id'];
 

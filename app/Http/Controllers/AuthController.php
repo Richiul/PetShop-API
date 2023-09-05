@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\JwtToken;
 use App\Models\PasswordReset;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,10 +16,10 @@ use Ramsey\Uuid\Uuid;
 
 class AuthController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('jwt.auth', ['except' => ['login', 'register','forgotPassword','resetPasswordToken']]);
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register','forgotPassword','resetPasswordToken']]);
+    }
 
     public function login(Request $request)
     {
@@ -117,14 +118,19 @@ class AuthController extends Controller
 
     public function createJwtTokenDb($user,$type='Login')
     {
+        
         if(!JwtToken::where('user_id',$user->id)->first())
         {
         $issuer = ['iss' => env('JWT_ISSUER')];
         $tokenFromUser = JWTAuth::claims($issuer)->fromUser($user);
+        $expiresAt = Carbon::now()->addHours(2);
         JwtToken::create([
             'user_id'=> $user->id,
             'unique_id' => $tokenFromUser,
-            'token_title' => $type.' token'
+            'token_title' => $type.' token',
+            'expires_at' => $expiresAt,
+            'last_used_at' => Carbon::now(),
+            'refresheed_at' => Carbon::now()
         ]);
         return $tokenFromUser;
     }
@@ -185,7 +191,7 @@ else
 
         if($request->password == $request->password_confirmation)
         {
-            $user->password = $request->password;
+            $user->password = Hash::make($request->password);
             $user->save();
 
             PasswordReset::create(['email' => $request->email,'token' => $token->unique_id,'created_at'=>now()]);
@@ -198,8 +204,51 @@ else
         return response()->json([
             'message' => 'Password doesn\'t match',
         ],422);
+    }
+
+    public function index()
+    {
+        
+        return response()->json([
+            'user' =>Auth::user(),
+            'status' => 'success',
+        ],200);
+        
+    }
+
+    public function delete()
+    {
+        $user = Auth::user();
+        $userEmail = $user->email;
+        JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first()->delete();
+        $requestToken = JWTAuth::parseToken();
+        $requestToken->invalidate();
+        User::where('id',$user->id)->first()->delete();
 
         
+
+        return response()->json([
+            'message' => 'User '.$userEmail.' deleted successfully',
+            'status' => 'success',
+        ],200);
+    }
+
+    public function edit(Request $request)
+    {
+        $user = Auth::user();
+
+        $requestData = $request->all();
+
+        $changedFields = array_diff_assoc($requestData,$user->toArray());
+
+        if(!empty($changedFields))
+        {
+            $user->update($changedFields);
+        }
         
+        return response()->json([
+            'message' => 'User '.$user->email.' updated successfully',
+            'status' => 'success',
+        ],200);
     }
 }
