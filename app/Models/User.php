@@ -47,7 +47,7 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
 
     public function passwordReset()
     {
-        return $this->hasMany(PasswordReset::class,'password_resets.email','email');
+        return $this->hasOne(PasswordReset::class,'email','email');
     }
 
     /**

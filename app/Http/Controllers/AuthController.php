@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterRequest;
 use App\Models\JwtToken;
 use App\Models\PasswordReset;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -69,25 +71,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'password_confirmation' => 'required|string|min:6|same:password',
-            'address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:255',
-            'avatar' => 'nullable|string',
-            'is_marketing' => 'nullable|boolean'
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-        
         $user = User::create([
             'uuid' => Uuid::uuid4()->toString() ?? '',
             'first_name' => $request->first_name,
@@ -176,7 +162,18 @@ else
 
         if($exists)
             {
-                $this->createJwtTokenDb($exists,'Forgot Password');
+                $token = PasswordReset::where('email',$request->email)->first();
+                if(!$token)
+                {
+                    PasswordReset::create(['email'=> $request->email,'token'=>Str::random(64),'created_at'=>now()]);
+                    return response()->json([
+                        'message' => 'Token sent to your email.',
+                    ],200);
+                }
+                else
+                return response()->json([
+                    'message' => 'Token already exists',
+                ],422);
             }
         else
         return response()->json([
@@ -186,16 +183,19 @@ else
 
     public function resetPasswordToken(Request $request)
     {
-        $token = JwtToken::where('unique_id',$request->token)->first();
-        $user = $token->user()->first();
+        $passwordReset = PasswordReset::where('email',$request->email)->first();
+        
+        if($passwordReset)
+        {
+        $user = $passwordReset->user()->first();
 
         if($request->password == $request->password_confirmation)
         {
             $user->password = Hash::make($request->password);
             $user->save();
 
-            PasswordReset::create(['email' => $request->email,'token' => $token->unique_id,'created_at'=>now()]);
-            $token->delete();
+            PasswordReset::where('email',$request->email)->first()->delete();
+
             return response()->json([
                 'message' => 'Password reset successfully',
             ],200);
@@ -203,6 +203,10 @@ else
         else
         return response()->json([
             'message' => 'Password doesn\'t match',
+        ],422);
+    }else
+        return response()->json([
+            'message' => 'You don\'t have a valid resetting token.',
         ],422);
     }
 
