@@ -25,10 +25,11 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
         'address',
         'phone_number',
         'uuid',
-        'password'
+        'password',
+        'is_admin'
     ];
 
-    protected $hidden = ['password','uuid'];
+    protected $hidden = ['password','uuid','is_admin'];
 
     public function file()
     {
@@ -37,12 +38,12 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
 
     public function order()
     {
-        return $this->hasMany(Order::class,'user_id','id');
+        return $this->hasMany(Order::class);
     }
 
     public function token()
     {
-        return $this->hasOne(JwtToken::class,'user_id','id');
+        return $this->hasOne(JwtToken::class);
     }
 
     public function passwordReset()

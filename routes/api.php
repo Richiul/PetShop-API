@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,17 +16,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::controller(AuthController::class)->group(function () {
-    Route::post('v1/user/login', 'login');
+Route::controller(UserController::class)->group(function () {
+    Route::post('v1/user/login', 'login')->middleware('authorized.user');
     Route::post('v1/user/create', 'register');
     Route::post('v1/user/forgot-password', 'forgotPassword');
     Route::post('v1/user/reset-password-token', 'resetPasswordToken');
     Route::get('v1/user', 'index');
     Route::put('v1/user/edit', 'edit');
     Route::delete('v1/user', 'delete');
-    Route::get('v1/user/logout', 'logout')->middleware(['remove.token','auth:api']);
+    Route::get('v1/user/logout', 'logout')->middleware(['remove.token']);
 });
 
 Route::controller(AdminController::class)->group(function() {
-    Route::post('v1/admin/create','create');
+    Route::post('v1/admin/create','register');
+    Route::post('v1/admin/login','login')->middleware('authorized.admin');
+    Route::get('v1/admin/logout', 'logout')->middleware(['remove.token']);
+    Route::get('v1/admin/user-listing', 'index');
+
 });

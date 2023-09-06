@@ -1,29 +1,23 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
-class RegisterRequest extends FormRequest
+class EditUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422)
-        );
+        try {
+            JWTAuth::parseToken()->authenticate();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -40,9 +34,7 @@ class RegisterRequest extends FormRequest
             'password' => ['required','string','min:6'],
             'password_confirmation' => ['required','string','min:6','same:password'],
             'address' => ['required','string','max:255'],
-            'phone_number' => ['required','string','max:255'],
-            'avatar' => ['nullable','string'],
-            'is_marketing' => ['nullable','boolean']
+            'phone_number' => ['required','string','max:255']
         ];
     }
 }

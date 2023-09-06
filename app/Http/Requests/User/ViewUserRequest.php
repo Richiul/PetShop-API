@@ -1,17 +1,23 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
-class ResetPasswordRequest extends FormRequest
+class ViewUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        try {
+            JWTAuth::parseToken()->authenticate();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -22,9 +28,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required','string','email','max:255','unique:users'],
-            'password' => ['required','string','min:6'],
-            'password_confirmation' => ['required','string','min:6','same:password'],
+            
         ];
     }
 }

@@ -13,17 +13,17 @@ class Order extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class,'id','user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function orderStatus()
     {
-        return $this->hasOne(OrderStatus::class,'id','order_status_id');
+        return $this->hasOne(OrderStatus::class);
     }
 
     public function payment()
     {
-        return $this->hasOne(Payment::class,'id','payment_id');
+        return $this->hasOne(Payment::class);
     }
 
     public function products()
