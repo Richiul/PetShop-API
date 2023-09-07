@@ -115,7 +115,7 @@ class UserController extends Controller
     {
         
         return response()->json([
-            'user' =>Auth::user(),
+            'user' =>JWTAuth::user(),
             'status' => 'success',
         ],200);
         
@@ -123,7 +123,7 @@ class UserController extends Controller
 
     public function delete(DeleteUserRequest $request)
     {
-        $user = Auth::user();
+        $user = JWTAuth::user();
         $userEmail = $user->email;
         JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first()->delete();
         $requestToken = JWTAuth::parseToken();
@@ -138,7 +138,7 @@ class UserController extends Controller
 
     public function edit(EditUserRequest $request)
     {
-        $user = Auth::user();
+        $user = JWTAuth::user();
 
         $requestData = $request->all();
 
@@ -146,6 +146,11 @@ class UserController extends Controller
 
         if(!empty($changedFields))
         {
+            if(array_key_exists('password',$changedFields))
+            {
+                $changedFields['password'] = Hash::make($changedFields['password']);
+                $changedFields['password_confirmation'] = Hash::make($changedFields['password_confirmation']);
+            }
             $user->update($changedFields);
         }
 

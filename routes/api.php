@@ -32,5 +32,7 @@ Route::controller(AdminController::class)->group(function() {
     Route::post('v1/admin/login','login')->middleware('authorized.admin');
     Route::get('v1/admin/logout', 'logout')->middleware(['remove.token']);
     Route::get('v1/admin/user-listing', 'index');
+    Route::put('v1/admin/user-edit/{uuid}', 'edit');
+    Route::put('v1/admin/user-delete/{uuid}', 'delete');
 
 });

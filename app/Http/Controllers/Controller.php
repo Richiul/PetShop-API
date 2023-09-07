@@ -104,7 +104,6 @@ class Controller extends BaseController
     
     }
 }
-
 else
 {
     return response()->json(['error'=>'Unauthenticated.']);

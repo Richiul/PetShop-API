@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserListingRequest extends FormRequest
@@ -20,6 +22,16 @@ class UserListingRequest extends FormRequest
         }
     }
 
+    protected function failedValidation(Validator $validator)
+    {
+            throw new HttpResponseException(
+                response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422)
+            );
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,10 +40,10 @@ class UserListingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => ['integer','required'],
-            'limit' => ['integer','required'],
-            'desc' => ['boolean','required'],
-            'sortBy' => ['string','required'],
+            'page' => ['integer','nullable'],
+            'limit' => ['integer','nullable'],
+            'desc' => ['boolean','nullable'],
+            'sortBy' => ['string','nullable'],
             'first_name' => ['string','nullable'],
             'email' => ['string','nullable'],
             'phone' => ['string','nullable'],
