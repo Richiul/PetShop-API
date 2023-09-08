@@ -4,6 +4,7 @@ namespace Database\Factories;
 use Illuminate\Support\Str;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\File>
@@ -18,9 +19,9 @@ class FileFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => uniqid(),
+            'uuid' => Uuid::uuid4()->toString(),
             'name' => fake()->name(),
-            'path' => fake()->colorName(),
+            'path' => fake()->image(),
             'size' => Str::random(10),
             'type' => 'mime',
             'created_at' =>now(),

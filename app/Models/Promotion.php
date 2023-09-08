@@ -10,4 +10,9 @@ class Promotion extends Model
     use HasFactory;
 
     protected $fillable = ['content','metadata'];
+
+    public function image()
+    {
+        return $this->hasOne(File::class,'metadata.image','uuid');
+    }
 }

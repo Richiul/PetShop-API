@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\File;
 use App\Models\Promotion;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Ramsey\Uuid\Uuid;
+
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Promotion>
@@ -21,12 +23,13 @@ class PromotionFactory extends Factory
     public function definition(): array
     {
 
-        $metadata = ['valid_from'=>now()->yesterday(),
-        'valid_to'=>now(),
-        'image'=>function(){return File::factory()->create()->uuid;}];
+        $metadata = ['valid_from'=>now(),
+        'valid_to'=>now()->tomorrow(),
+        'image'=>File::factory()->create()->uuid
+    ];
 
         return [
-            'uuid' => uniqid(),
+            'uuid' => Uuid::uuid4()->toString(),
             'content'=>fake()->text(50),
             "metadata"=>json_encode($metadata),
             'created_at' => now(),

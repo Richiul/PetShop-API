@@ -21,4 +21,14 @@ class File extends Model
         return $this->belongsTo(Product::class,'metadata.image','uuid');
     }
 
+    public function post()
+    {
+        return $this->belongsTo(Post::class,'uuid','metadata.image');
+    }
+
+    public function promotion()
+    {
+        return $this->belongsTo(Promotion::class,'uuid','metadata.image');
+    }
+
 }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Category;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Str;
 
 
 
@@ -19,7 +20,7 @@ class CategorySeeder extends Seeder
             Category::create([
                 'title' => $categoryName,
                 'uuid' => Uuid::uuid4()->toString(),
-                'slug'=>strtolower($categoryName)
+                'slug'=>Str::slug($categoryName)
             ]);
         }
     }

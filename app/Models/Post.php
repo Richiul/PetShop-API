@@ -10,4 +10,9 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = ['title','slug','content','metadata'];
+
+    public function image()
+    {
+        return $this->hasOne(File::class,'metadata.image','uuid');
+    }
 }
