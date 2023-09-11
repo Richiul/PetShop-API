@@ -1,23 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Brand;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
-class DeleteUserFromAdminRequest extends FormRequest
+class BrandRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        try {
-            JWTAuth::parseToken()->authenticate();
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
+        return true;
     }
 
     /**
@@ -28,7 +22,7 @@ class DeleteUserFromAdminRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            
         ];
     }
 }

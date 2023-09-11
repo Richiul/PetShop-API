@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\JwtShareToken;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -20,7 +21,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class
     ];
 
     /**
@@ -42,6 +43,7 @@ class Kernel extends HttpKernel
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            
         ],
     ];
 
@@ -66,7 +68,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'remove.token' =>  \App\Http\Middleware\RemoveTokenMiddleware::class,
         'authorized.user' =>  \App\Http\Middleware\AuthorizedUser::class,
-        'authorized.admin' =>  \App\Http\Middleware\AuthorizedAdmin::class
+        'authorized.admin' =>  \App\Http\Middleware\AuthorizedAdmin::class,
+        'jwt.blacklist' =>  \Tymon\JWTAuth\Blacklist::class
 
     ];
 }

@@ -65,7 +65,7 @@ class Controller extends BaseController
 
        if($token)
        {
-        $token = $this->createJwtTokenDb($user);
+            $token = $this->createJwtTokenDb($user);
        }else
             return response()->json([
                 'message' => 'Unauthorized',

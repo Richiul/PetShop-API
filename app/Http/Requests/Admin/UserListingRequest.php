@@ -42,14 +42,14 @@ class UserListingRequest extends FormRequest
         return [
             'page' => ['integer','nullable'],
             'limit' => ['integer','nullable'],
-            'desc' => ['boolean','nullable'],
+            'desc' => ['in:true,false,0,1','nullable'],
             'sortBy' => ['string','nullable'],
             'first_name' => ['string','nullable'],
             'email' => ['string','nullable'],
             'phone' => ['string','nullable'],
             'address' => ['text','nullable'],
             'created_at' => ['date','nullable'],
-            'marketing'=>['boolean','nullable']
+            'marketing'=>['in:true,false,0,1','nullable']
         ];
     }
 }

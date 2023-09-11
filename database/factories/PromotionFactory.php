@@ -23,8 +23,8 @@ class PromotionFactory extends Factory
     public function definition(): array
     {
 
-        $metadata = ['valid_from'=>now(),
-        'valid_to'=>now()->tomorrow(),
+        $metadata = ['valid_from'=>now()->format('Y-m-d m-i-s'),
+        'valid_to'=>now()->tomorrow()->format('Y-m-d m-i-s'),
         'image'=>File::factory()->create()->uuid
     ];
 

@@ -18,7 +18,7 @@ class AdminController extends Controller
     
     public function __construct()
     {
-        $this->middleware(['auth:api'], ['except' => ['login', 'register']]);
+        $this->middleware(['auth:api','jwt.blacklist'], ['except' => ['login', 'register']]);
     }
 
     public function register(RegisterRequest $request)
@@ -55,24 +55,22 @@ class AdminController extends Controller
 
         public function index(UserListingRequest $request)
         {
+            
             $page = $request->page  ?? 1;
-
-            if($page != 1)
-                url()->current()."?page=".$request->page;
 
             $limit = $request->limit ?? 15;
             $nonAdmins = User::where('is_admin',false);
+            
+            $maxPages = round($nonAdmins->count() / $limit) < 1 ? 1 : round($nonAdmins->count() / $limit);
 
-            $maxPages = round($nonAdmins->count() / $limit);
-
-            if($maxPages > 0 && $page > $maxPages)
+            if($page > $maxPages)
                 return response()->json([
                     'status' => 'error',
                     'message' => 'The database doesn\'t have that many users.'
                 ],422);
             
             $sortBy = $request->sortBy ?? 'id';
-            $desc = $request->desc ?? true;
+            $desc = (!$request->desc || $request->desc == 'true' || $request->desc == 1) ? true : false;
             
             if($request->first_name)
                 $nonAdmins = $nonAdmins->where('first_name','like','%'.$request->first_name.'%');
@@ -103,7 +101,7 @@ class AdminController extends Controller
         public function edit(EditUserFromAdminRequest $request, $uuid)
         {
             
-        $user = JWTAuth::user();
+        $user = User::where('uuid',$uuid)->first();
 
         if(!$user)
             return response()->json([
@@ -145,8 +143,10 @@ class AdminController extends Controller
                 ],404);
 
             $userEmail = $user->email;
+
             JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first()->delete();
-            $requestToken = JWTAuth::parseToken();
+
+            $requestToken = JWTAuth::fromUser($user);
             $requestToken->invalidate();
             $user->delete();
     

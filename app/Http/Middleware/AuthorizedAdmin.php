@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\JwtToken;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -16,7 +17,18 @@ class AuthorizedAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = User::where('email',$request->email)->first();
+        $bearerToken = $request->header('authorization') ?? null;
+        
+        if($bearerToken != null)
+        {
+            $bearerToken = explode(' ',$bearerToken);
+            $token = implode(' ', array_slice($bearerToken, 1));
+        
+        $isValid = JwtToken::where('unique_id',$token)->first();
+        }
+        
+        $user = User::where('id',$isValid->user_id)->first();
+        
         if(!$user->is_admin)
             return response()->json([
                 'message' => 'Users cannot login here.'
