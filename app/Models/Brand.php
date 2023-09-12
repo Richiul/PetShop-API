@@ -9,7 +9,9 @@ class Brand extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title','slug'];
+    protected $fillable = ['uuid','title','slug'];
+
+    protected $hidden = ['uuid'];
 
     public function product()
     {

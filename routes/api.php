@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BrandsController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\MainPageController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(UserController::class)->prefix('v1/user')->group(function () {
     Route::post('/login', 'login')->name('user.login')->middleware('authorized.user');
     Route::post('/create', 'register')->name('user.create');
-    Route::post('/forgot-password', 'forgotPassword')->name('user.forgot.assword');
+    Route::post('/forgot-password', 'forgotPassword')->name('user.forgot.password');
     Route::post('/reset-password-token', 'resetPasswordToken')->name('user.reset.password.token');
     Route::get('/', 'index')->name('user.view');
     Route::put('/edit', 'edit')->name('user.edit');
@@ -31,7 +33,7 @@ Route::controller(UserController::class)->prefix('v1/user')->group(function () {
 
 Route::controller(AdminController::class)->prefix('v1/admin')->group(function() {
     Route::post('/create','register')->name('admin.create');
-    Route::post('/login','login')->name('admin.login')->middleware('authorized.admin');
+    Route::post('/login','login')->name('admin.login');
     Route::get('/logout', 'logout')->name('admin.logout')->middleware(['remove.token']);
     Route::get('/user-listing', 'index')->name('admin.user.list');
     Route::put('/user-edit/{uuid}', 'edit')->name('admin.user.edit');
@@ -50,6 +52,25 @@ Route::controller(BrandsController::class)->prefix('v1')->group(function() {
     Route::put('/brand/{uuid}','edit')->name('brand.edit');
     Route::delete('/brand/{uuid}','delete')->name('brand.delete');
     Route::get('/brand/{uuid}','brand')->name('brand.view.brand');
+});
+
+Route::controller(CategoriesController::class)->prefix('v1')->group(function() {
+    Route::get('categories','index')->name('category.view.categories');
+    Route::post('/category/create','create')->name('category.create');
+    Route::put('/category/{uuid}','edit')->name('category.edit');
+    Route::delete('/category/{uuid}','delete')->name('category.delete');
+    Route::get('/category/{uuid}','category')->name('category.view.category');
+});
+
+Route::controller(OrdersController::class)->prefix('v1')->group(function() {
+    Route::post('order/create','create')->name('order.create');
+    Route::get('/order/{uuid}','order')->name('order.view');
+    Route::put('/order/{uuid}','edit')->name('order.edit');
+    Route::delete('/order/{uuid}','delete')->name('order.delete');
+    Route::get('/order/{uuid}/download','download')->name('order.download');
+    Route::get('/orders','index')->name('orders.view');
+    Route::get('/orders/dashboard','dashboard')->name('orders.dashboard');
+    Route::get('/orders/shipment-locator','shipment')->name('orders.shipment.locator');
 
 });
 

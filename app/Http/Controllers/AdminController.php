@@ -18,7 +18,7 @@ class AdminController extends Controller
     
     public function __construct()
     {
-        $this->middleware(['auth:api','jwt.blacklist'], ['except' => ['login', 'register']]);
+        $this->middleware(['auth:api','authorized.admin'], ['except' => ['login', 'register']]);
     }
 
     public function register(RegisterRequest $request)
