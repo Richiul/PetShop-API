@@ -1,0 +1,22 @@
+{
+    "name": "rpalk/exchange",
+    "type": "laravel-package",
+    "autoload": {
+        "psr-4": {
+            "Exchange\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Exchange\\CurrencyExchangeServiceProvider"
+            ]
+        }
+    }
+}
