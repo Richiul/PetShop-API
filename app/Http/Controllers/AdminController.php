@@ -15,10 +15,10 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminController extends Controller
 {
-    
+
     public function __construct()
     {
-        $this->middleware(['auth:api','authorized.admin'], ['except' => ['login', 'register']]);
+        $this->middleware(['jwt.auth','authorized.admin'], ['except' => ['login', 'register']]);
     }
 
     public function register(RegisterRequest $request)

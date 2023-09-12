@@ -40,7 +40,7 @@ class Controller extends BaseController
         {
         return response()->json([
             'message' => 'You are already logged in on another window.',
-        ]);
+        ],401);
     }
     }
 
@@ -65,7 +65,11 @@ class Controller extends BaseController
 
        if($token)
        {
-            $token = $this->createJwtTokenDb($user);
+        $token = $this->createJwtTokenDb($user);
+        if($token->status() == 401)
+            return response()->json([
+                'message' => 'Unauthorized, already logged in',
+            ], 401);
        }else
             return response()->json([
                 'message' => 'Unauthorized',
@@ -73,7 +77,6 @@ class Controller extends BaseController
 
         $user->last_login_at = now();
         $user->save();
-
         return response()->json([
             'user' => $user,
             'authorization' => [

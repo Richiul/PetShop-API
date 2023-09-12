@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\JwtAuthMiddleware;
 use App\Http\Middleware\JwtShareToken;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -69,7 +70,7 @@ class Kernel extends HttpKernel
         'remove.token' =>  \App\Http\Middleware\RemoveTokenMiddleware::class,
         'authorized.user' =>  \App\Http\Middleware\AuthorizedUser::class,
         'authorized.admin' =>  \App\Http\Middleware\AuthorizedAdmin::class,
-        'jwt.blacklist' =>  \Tymon\JWTAuth\Blacklist::class
+        'jwt.auth' => JwtAuthMiddleware::class
 
     ];
 }
