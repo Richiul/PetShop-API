@@ -23,7 +23,7 @@ class CurrencyExchangeTest extends TestCase
         $controller = new CurrencyExchangeController();
 
         try {
-            $response = $controller->exchange($request->amount,$request->currency);
+            $response = $controller->exchange($request);
             $this->assertIsFloat($response);
             $this->assertGreaterThanOrEqual(0, $response);
         } catch (ValidationException $e) {
