@@ -1,0 +1,1306 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Swagger API",
+    "version": "1.0.0-oas3",
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000"
+    }
+  ],
+  "paths": {
+    "/api/v1/user/create": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Create User",
+        "description": "Create User",
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "test34@yahoo.com"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "password_confirmation": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "phone_number": {
+                    "type": "string",
+                    "example": "12321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          },
+          "422": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/user/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Login user",
+        "description": "Login user",
+        "operationId": "loginUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "test35@yahoo.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  }
+                }
+              },
+              "examples": {
+                "Login user": {
+                  "value": {
+                    "email": "test35@yahoo.com",
+                    "password": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/user/logout": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Logout User",
+        "description": "Logout User",
+        "operationId": "logoutUser",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          },
+          "422": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/user/forgot-password": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Forgot Password user",
+        "description": "Forgot Password user",
+        "operationId": "forgotPasswordUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "test28@yahoo.com"
+                  }
+                }
+              },
+              "examples": {
+                "Forgot Password user": {
+                  "value": {
+                    "email": "test28@yahoo.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/user/reset-password-token": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Reset Password",
+        "description": "Reset Password",
+        "operationId": "resetPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "test28@yahoo.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "password_confirmation": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "token": {
+                    "type": "string",
+                    "example": "0RuXOXDJyVSzgFb33zWMcOqOvulj9ITe7qHRlwOYaD9eTKbgi9"
+                  }
+                }
+              },
+              "examples": {
+                "Reset Password": {
+                  "value": {
+                    "email": "test28@yahoo.com",
+                    "password": "password",
+                    "password_confirmation": "password",
+                    "token": "0RuXOXDJyVSzgFb33zWMcOqOvulj9ITe7qHRlwOYaD9eTKbgi9"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "View User",
+        "description": "View User",
+        "operationId": "viewUser",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete User",
+        "description": "Delete User",
+        "operationId": "deleteUser",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/user/edit": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Edit User",
+        "description": "Edit User",
+        "operationId": "editUser",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "test33@yahoo.com"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "example": "test1"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password1"
+                  },
+                  "password_confirmation": {
+                    "type": "string",
+                    "example": "password1"
+                  },
+                  "phone_number": {
+                    "type": "string",
+                    "example": "12321"
+                  }
+                }
+              },
+              "examples": {
+                "Edit User": {
+                  "value": {
+                    "address": "test",
+                    "email": "test33@yahoo.com",
+                    "first_name": "test",
+                    "last_name": "test1",
+                    "password": "password1",
+                    "password_confirmation": "password1",
+                    "phone_number": "12321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/admin/create": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Create Admin",
+        "description": "Create Admin",
+        "operationId": "createAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "test01@yahoo.com"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "password_confirmation": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "phone_number": {
+                    "type": "string",
+                    "example": "12321"
+                  }
+                }
+              },
+              "examples": {
+                "Create Admin": {
+                  "value": {
+                    "address": "test",
+                    "email": "test01@yahoo.com",
+                    "first_name": "test",
+                    "last_name": "test",
+                    "password": "password",
+                    "password_confirmation": "password",
+                    "phone_number": "12321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocesssable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/admin/login": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Login Admin",
+        "description": "Login Admin",
+        "operationId": "loginAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "test01@yahoo.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  }
+                }
+              },
+              "examples": {
+                "Login Admin": {
+                  "value": {
+                    "email": "test01@yahoo.com",
+                    "password": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/admin/logout": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Logout Admin",
+        "description": "Logout Admin",
+        "operationId": "logoutAdmin",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/admin/user-listing": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "User Listing Admin",
+        "description": "User Listing Admin",
+        "operationId": "userListingAdmin",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "3"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/admin/user-edit/{uuid}": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Edit User Account",
+        "description": "Edit User Account",
+        "operationId": "editUserAccount",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "test33@yahoo.com"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "example": "test"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "example": "test1"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password1"
+                  },
+                  "password_confirmation": {
+                    "type": "string",
+                    "example": "password1"
+                  },
+                  "phone_number": {
+                    "type": "string",
+                    "example": "12321"
+                  }
+                }
+              },
+              "examples": {
+                "Edit User Account": {
+                  "value": {
+                    "address": "test",
+                    "email": "test33@yahoo.com",
+                    "first_name": "test",
+                    "last_name": "test1",
+                    "password": "password1",
+                    "password_confirmation": "password1",
+                    "phone_number": "12321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "uuid",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      ]
+    },
+    "/api/v1/admin/user-delete/{uuid}": {
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Delete User Account",
+        "description": "Delete User Account",
+        "operationId": "deleteUserAccount",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "6e1c6fd9-8811-484e-b28a-870098d589f"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unauthorized entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/main/blog": {
+      "get": {
+        "tags": [
+          "Main"
+        ],
+        "summary": "View Posts",
+        "description": "View Posts",
+        "operationId": "viewPosts",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "3"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "id"
+            }
+          },
+          {
+            "name": "desc",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "true"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessabl entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/main/blog/{uuid}": {
+      "get": {
+        "tags": [
+          "Main"
+        ],
+        "summary": "Fetch post",
+        "description": "Fetch post",
+        "operationId": "fetchPost",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "uuid",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "dd2c1079-5d33-4af6-a468-47cab8181b6"
+          }
+        }
+      ]
+    },
+    "/api/v1/main/promotions": {
+      "get": {
+        "tags": [
+          "Main"
+        ],
+        "summary": "Promotions",
+        "description": "Promotions",
+        "operationId": "promotions",
+        "parameters": [
+          {
+            "name": "valid",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "true"
+            }
+          },
+          {
+            "name": "desc",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "false"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/brands": {
+      "get": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "View Brands",
+        "description": "View Brands",
+        "operationId": "viewBrands",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/brand/create": {
+      "post": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "Create Brand",
+        "description": "Create Brand",
+        "operationId": "createBrand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "test ceva"
+                  }
+                }
+              },
+              "examples": {
+                "Create Brand": {
+                  "value": {
+                    "title": "test ceva"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/brand/{uuid}": {
+      "get": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "View Brand",
+        "description": "View Brand",
+        "operationId": "viewBrand",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "Edit Brand",
+        "description": "Edit Brand",
+        "operationId": "editBrand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Pedigree2"
+                  }
+                }
+              },
+              "examples": {
+                "Edit Brand": {
+                  "value": {
+                    "title": "Pedigree2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Brands"
+        ],
+        "summary": "Delete Brand",
+        "description": "Delete Brand",
+        "operationId": "deleteBrand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "uuid",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "8482be17-8624-431e-8698-8d71408e6d08"
+          }
+        }
+      ]
+    },
+    "/api/v1/category/create": {
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Create Category",
+        "description": "Create Category",
+        "operationId": "createCategory",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "test ceva"
+                  }
+                }
+              },
+              "examples": {
+                "Create Category": {
+                  "value": {
+                    "title": "test ceva"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/v1/category/{uuid}": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "View Category",
+        "description": "View Category",
+        "operationId": "viewCategory",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Edit Category",
+        "description": "Edit Category",
+        "operationId": "editCategory",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Ceva"
+                  }
+                }
+              },
+              "examples": {
+                "Edit Category": {
+                  "value": {
+                    "title": "Ceva"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Delete Category",
+        "description": "Delete Category",
+        "operationId": "deleteCategory",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "uuid",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "eb8bb884-9f03-48da-8f3f-fb6c394685ad"
+          }
+        }
+      ]
+    },
+    "/exchange/currency": {
+      "get": {
+        "summary": "Currency Exchange",
+        "description": "Currency Exchange",
+        "operationId": "currencyExchange",
+        "parameters": [
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "example": 15
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "RON"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "bearerFormat": "JWT,",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "User"
+    },
+    {
+      "name": "Admin"
+    },
+    {
+      "name": "Main"
+    },
+    {
+      "name": "Brands"
+    },
+    {
+      "name": "Categories"
+    }
+  ]
+}

@@ -134,8 +134,8 @@ class AdminController extends Controller
 
         public function delete(DeleteUserFromAdminRequest $request,$uuid)
         {
-            $user = User::where('id',$uuid)->first();
-
+            $user = User::where('uuid',$uuid)->first();
+            
             if(!$user)
                 return response()->json([
                     'status' => 'error',
@@ -143,11 +143,13 @@ class AdminController extends Controller
                 ],404);
 
             $userEmail = $user->email;
-
-            JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first()->delete();
-
-            $requestToken = JWTAuth::fromUser($user);
-            $requestToken->invalidate();
+            if($token = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first())
+            {
+                $token = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first()->delete();
+                $requestToken = JWTAuth::fromUser($user)->invalidate();
+            }
+            
+            
             $user->delete();
     
             return response()->json([

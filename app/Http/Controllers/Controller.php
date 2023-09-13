@@ -59,20 +59,14 @@ class Controller extends BaseController
         try {
             // Generate a JWT token for the user
             $token = JWTAuth::fromUser($user);
+            $token = $this->createJwtTokenDb($user);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Failed to generate token'], 500);
         }
 
-       if($token)
-       {
-        $token = $this->createJwtTokenDb($user);
-        if($token->status() == 401)
+        if(!is_string($token))
             return response()->json([
                 'message' => 'Unauthorized, already logged in',
-            ], 401);
-       }else
-            return response()->json([
-                'message' => 'Unauthorized',
             ], 401);
 
         $user->last_login_at = now();
@@ -88,7 +82,7 @@ class Controller extends BaseController
 
     public function logout()
     {
-        $user = Auth::user();
+        $user = JWTAuth::user();
         
         if($user)
         {

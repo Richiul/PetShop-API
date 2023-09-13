@@ -11,8 +11,6 @@ class Brand extends Model
 
     protected $fillable = ['uuid','title','slug'];
 
-    protected $hidden = ['uuid'];
-
     public function product()
     {
         return $this->belongsTo(Product::class,'metadata.brand','uuid');

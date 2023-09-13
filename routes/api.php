@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(UserController::class)->prefix('v1/user')->group(function () {
-    Route::post('/login', 'login')->name('user.login');
+    Route::post('/login', 'login')->name('user.login')->middleware('authorized.user');
     Route::post('/create', 'register')->name('user.create');
     Route::post('/forgot-password', 'forgotPassword')->name('user.forgot.password');
     Route::post('/reset-password-token', 'resetPasswordToken')->name('user.reset.password.token');

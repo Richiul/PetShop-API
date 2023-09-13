@@ -21,7 +21,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['jwt.auth','authorized.user'], ['except' => ['login', 'register','forgotPassword','resetPasswordToken']]);
+        $this->middleware(['jwt.auth',], ['except' => ['login', 'register','forgotPassword','resetPasswordToken']]);
     }
 
     public function register(RegisterRequest $request)

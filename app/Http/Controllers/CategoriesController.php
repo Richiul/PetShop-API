@@ -130,7 +130,7 @@ class CategoriesController extends Controller
 
         public function create(CategoryCreateCategoryRequest $request){
             try{
-                Category::create([
+                $category = Category::create([
                     'uuid' => Uuid::uuid4()->toString() ?? '',
                     'title' => $request->title,
                     'slug' => Str::slug($request->title)
@@ -145,6 +145,7 @@ class CategoriesController extends Controller
 
             return response()->json([
                 'message' => 'Category created successfully.',
+                'data' => $category,
                 'status' => 'success',
             ],200);
 
