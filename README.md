@@ -5,7 +5,7 @@ This project has the purpose of showing my Laravel programming skills.
 To run locally the project you need to first run the following commands
 
 ```bash
-  clone https://github.com/Richiul/PetShop-API.git PetShop-API
+  git clone https://github.com/Richiul/PetShop-API.git PetShop-API
 
   cd PetShop-API/
 ```
@@ -23,6 +23,14 @@ It may take some time... so we wait.
 To run this project, you will need to create your .env file and add the following environment variables to it
 
 `JWT_SECRET` => This should be a random string with letters and numbers
+
+## Database setup
+
+For the database to be created and the basic data to be added, you need to run in the root of your project:
+
+```bash
+php artisan migrate --seed
+```
 
 Now the application routes should work as expected.
 
