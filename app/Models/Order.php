@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['products', 'address', 'delivery_fee', 'amount'];
     /**
      * Define a one-to-one relationship with the File model.

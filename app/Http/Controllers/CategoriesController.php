@@ -38,7 +38,7 @@ class CategoriesController extends Controller
             ], 422);
 
         $sortBy = $request->sortBy ?? 'id';
-        $desc = (!$request->desc || $request->desc == 'true' || $request->desc == 1) ? true : false;
+        $desc = (!$request->desc || $request->desc === 'true' || $request->desc === 1) ? true : false;
 
         $finalCategories = Category::orderBy($sortBy, ($desc) ? 'desc' : 'asc')->paginate($limit);
 
@@ -98,7 +98,7 @@ class CategoriesController extends Controller
                 'message' => 'Category not found.'
             ], 404);
 
-        if ($request->title != $category->title) {
+        if ($request->title !== $category->title) {
             $category->title = $request->title;
             $category->slug = Str::slug($request->title);
         }

@@ -25,8 +25,9 @@ class AuthorizedAdmin
             $token = implode(' ', array_slice($bearerToken, 1));
             $isValid = JwtToken::where('unique_id', $token)->first();
         }
-        if ($isValid)
+        if ($isValid) {
             $user = User::where('id', $isValid->user_id)->first();
+        }
         if ($user) {
             if (!$user->is_admin)
                 return response()->json([

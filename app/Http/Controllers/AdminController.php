@@ -78,7 +78,7 @@ class AdminController extends Controller
             ], 422);
 
         $sortBy = $request->sortBy ?? 'id';
-        $desc = (!$request->desc || $request->desc == 'true' || $request->desc == 1) ? true : false;
+        $desc = (!$request->desc || $request->desc === 'true' || $request->desc === 1) ? true : false;
 
         if ($request->first_name)
             $nonAdmins = $nonAdmins->where('first_name', 'like', '%' . $request->first_name . '%');

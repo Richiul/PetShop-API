@@ -13,9 +13,9 @@ class Product extends Model
     /**
      * Define a one-to-one relationship with the File model.
      *
-     * @var array
+     * @var array<string>
      */
-    protected array $fillable = ['title', 'price', 'description', 'metadata'];
+    protected $fillable = ['title', 'price', 'description', 'metadata'];
     /**
      * Define a one-to-one relationship with the File model.
      *

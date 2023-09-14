@@ -12,9 +12,9 @@ class Promotion extends Model
     /**
      * Define a one-to-one relationship with the File model.
      *
-     * @var array
+     * @var array<string>
      */
-    protected array $fillable = ['content', 'metadata'];
+    protected $fillable = ['content', 'metadata'];
     /**
      * Define a one-to-one relationship with the File model.
      *

@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class File extends Model
 {
     use HasFactory;
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['name', 'path', 'size', 'type'];
     /**
      * Define a one-to-one relationship with the File model.

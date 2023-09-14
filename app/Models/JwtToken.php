@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class JwtToken extends Model
 {
     use HasFactory;
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['user_id', 'unique_id', 'token_title', 'expires_at', 'last_used_at', 'refreshed_at'];
 
     protected $hidden = ['unique_id'];

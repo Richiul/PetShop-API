@@ -11,9 +11,9 @@ class Post extends Model
     /**
      * Define a one-to-one relationship with the File model.
      *
-     * @var array
+     * @var array<string>
      */
-    protected array $fillable = ['title', 'slug', 'content', 'metadata'];
+    protected $fillable = ['title', 'slug', 'content', 'metadata'];
     /**
      * Define a one-to-one relationship with the File model.
      *

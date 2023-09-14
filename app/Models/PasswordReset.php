@@ -11,7 +11,11 @@ class PasswordReset extends Model
     use HasFactory;
 
     public $timestamps = false;
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['email', 'token'];
 
     /**

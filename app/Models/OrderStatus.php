@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class OrderStatus extends Model
 {
     use HasFactory;
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['title', 'slug'];
     /**
      * Define a one-to-one relationship with the File model.

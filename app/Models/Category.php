@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     use HasFactory;
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array<string>
+     */
     protected $fillable = ['uuid', 'title', 'slug'];
     /**
      * Define a one-to-one relationship with the File model.

@@ -38,7 +38,7 @@ class BrandsController extends Controller
             ], 422);
 
         $sortBy = $request->sortBy ?? 'id';
-        $desc = (!$request->desc || $request->desc == 'true' || $request->desc == 1) ? true : false;
+        $desc = (!$request->desc || $request->desc === 'true' || $request->desc === 1) ? true : false;
 
         $finalBrands = Brand::orderBy($sortBy, ($desc) ? 'desc' : 'asc')->paginate($limit);
 
@@ -98,7 +98,7 @@ class BrandsController extends Controller
                 'message' => 'Brand not found.'
             ], 404);
 
-        if ($request->title != $brand->title) {
+        if ($request->title !== $brand->title) {
             $brand->title = $request->title;
             $brand->slug = Str::slug($request->title);
         }

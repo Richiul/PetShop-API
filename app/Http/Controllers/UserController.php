@@ -2,235 +2,200 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\EditUserRequest;
 use App\Http\Requests\User\ForgotPasswordRequest;
 use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\ResetPasswordRequest;
+use App\Models\JwtToken;
 use App\Models\PasswordReset;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['jwt.auth'], ['except' => ['login', 'register', 'forgotPassword', 'resetPasswordToken']]);
+        $this->middleware(['jwt.auth',], ['except' => ['login', 'register', 'forgotPassword', 'resetPasswordToken']]);
     }
     /**
-     * Register a new user.
+     * JSON response.
      *
-     * @param RegisterRequest $request
-     * @return JsonResponse
+     * @return JsonResponse|array<mixed>
      */
-    public function register(RegisterRequest $request): JsonResponse
+    public function register(RegisterRequest $request)
     {
-        $user = $this->createUser($request);
-
-        if (!$user) {
-            return $this->errorResponse('User creation failed', 500);
-        }
+        $user = User::create([
+            'uuid' => Uuid::uuid4()->toString(),
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'email_verified_at' => now(),
+            'password' => Hash::make($request->password),
+            'address' => $request->address,
+            'phone_number' => $request->phone_number,
+            'avatar' => $request->avatar ?? '',
+            'is_marketing' => $request->is_marketing ?? 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $token = $this->createJwtTokenDb($user);
 
-        return $this->successResponse([
+        return response()->json([
+            'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
-            ],
+            ]
         ]);
     }
-
     /**
-     * Forgot password request.
+     * JSON response.
      *
-     * @param ForgotPasswordRequest $request
-     * @return JsonResponse
+     * @return JsonResponse|array<mixed>
      */
-    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+    public function forgotPassword(ForgotPasswordRequest $request)
     {
         $exists = User::where('email', $request->email)->first();
 
         if ($exists) {
-            return $this->sendPasswordResetToken($request->email);
-        }
-
-        return $this->errorResponse('Email doesn\'t exist', 422);
+            $token = PasswordReset::where('email', $request->email)->first();
+            if (!$token) {
+                PasswordReset::create(['email' => $request->email, 'token' => Str::random(64), 'created_at' => now()]);
+                return response()->json([
+                    'message' => 'Token sent to your email.',
+                ], 200);
+            } else
+                return response()->json([
+                    'message' => 'Token already exists',
+                ], 422);
+        } else
+            return response()->json([
+                'message' => 'Email doesn\'t exist',
+            ], 422);
     }
-
     /**
-     * Reset password with token.
+     * JSON response.
      *
-     * @param ResetPasswordRequest $request
-     * @return JsonResponse
+     * @return JsonResponse|array<mixed>
      */
-    public function resetPasswordToken(ResetPasswordRequest $request): JsonResponse
+    public function resetPasswordToken(ResetPasswordRequest $request)
     {
         $passwordReset = PasswordReset::where('email', $request->email)->first();
 
         if ($passwordReset) {
             $user = $passwordReset->user()->first();
 
-            if ($this->resetUserPassword($request, $user)) {
-                $passwordReset->delete();
-                return $this->successResponse('Password reset successfully');
-            }
+            if ($request->password == $request->password_confirmation) {
+                if ($user) {
+                    $user->password = Hash::make($request->password);
+                    $user->save();
+                }
 
-            return $this->errorResponse('Password doesn\'t match', 422);
-        }
+                $passwordReset = PasswordReset::where('email', $request->email)->first();
 
-        return $this->errorResponse('You don\'t have a valid resetting token.', 401);
+                if ($passwordReset)
+                    $passwordReset->delete();
+                else
+                    return response()->json([
+                        'message' => 'You don\'t have a valid resetting token.',
+                    ], 401);
+
+                return response()->json([
+                    'message' => 'Password reset successfully',
+                ], 200);
+            } else
+                return response()->json([
+                    'message' => 'Password doesn\'t match',
+                ], 422);
+        } else
+            return response()->json([
+                'message' => 'You don\'t have a valid resetting token.',
+            ], 401);
     }
-
     /**
-     * Delete the authenticated user.
+     * JSON response.
      *
-     * @return JsonResponse
+     * @return JsonResponse|array<mixed>
      */
-    public function delete(): JsonResponse
+    public function index()
     {
-        $user = JWTAuth::user();
 
-        if (!$user instanceof User) {
-            return $this->errorResponse('User not found', 422);
-        }
-
-        $userEmail = $user->email;
-        $this->deleteJwtToken($user->id);
-        $this->invalidateToken();
-
-        if ($this->deleteUser($user)) {
-            return $this->successResponse('User ' . $userEmail . ' deleted successfully');
-        }
-
-        return $this->errorResponse('User deletion failed', 500);
-    }
-
-    /**
-     * Edit the authenticated user's profile.
-     *
-     * @param EditUserRequest $request
-     * @return JsonResponse
-     */
-    public function edit(EditUserRequest $request): JsonResponse
-    {
-        $user = JWTAuth::user();
-
-        if (!$user instanceof User) {
-            return $this->errorResponse('User not found', 422);
-        }
-
-        $requestData = $request->all();
-        $changedFields = array_diff_assoc($requestData, $user->toArray());
-
-        if (is_array($changedFields) && !empty($changedFields)) {
-            $this->updateUser($user, $changedFields);
-        }
-
-        return $this->successResponse('User ' . $user->email . ' updated successfully');
-    }
-
-    /**
-     * Create a new user.
-     *
-     * @param RegisterRequest $request
-     * @return User|null
-     */
-    private function createUser(): ?User
-    {
-        // ... Create and return the user ...
-
-        return $user;
-    }
-
-    /**
-     * Send a password reset token.
-     *
-     * @param string $email
-     * 
-     * @return JsonResponse
-     */
-    private function sendPasswordResetToken(): JsonResponse
-    {
-        // ... Send the password reset token and return a response ...
-
-        return $this->successResponse('Token sent to your email.');
-    }
-
-    /**
-     * Reset the user's password.
-     *
-     * @param ResetPasswordRequest $request
-     * 
-     * @param User $user
-     * 
-     * @return bool
-     */
-    private function resetUserPassword(): bool
-    {
-        // ... Reset the user's password and return success or failure ...
-
-        return true; // Replace with your logic
-    }
-
-    /**
-     * Delete the user.
-     *
-     * @param User $user
-     * 
-     * @return bool
-     */
-    private function deleteUser(): bool
-    {
-        // ... Delete the user and return success or failure ...
-
-        return true; // Replace with your logic
-    }
-
-    /**
-     * Update the user's profile.
-     *
-     * @param User $user
-     * 
-     * @param array $fields
-     */
-    private function updateUser(): void
-    {
-        // ... Update the user's profile ...
-
-        // Example:
-        // $user->update($fields);
-    }
-
-    // Other helper functions for JWT token management
-
-    // ...
-
-    /**
-     * JSON response for success.
-     *
-     * @return JsonResponse
-     */
-    private function successResponse(mixed $data): JsonResponse
-    {
         return response()->json([
+            'user' => JWTAuth::user(),
             'status' => 'success',
-            'data' => $data,
         ], 200);
     }
-
     /**
-     * JSON response for error.
+     * JSON response.
      *
-     * @return JsonResponse
+     * @return JsonResponse|array<mixed>
      */
-    private function errorResponse(string $message, int $statusCode): JsonResponse
+    public function delete(DeleteUserRequest $request)
     {
-        return response()->json([
-            'status' => 'error',
-            'message' => $message,
-        ], $statusCode);
+        $user = JWTAuth::user();
+        if ($user instanceof User) {
+            $userEmail = $user->email;
+            $jwtToken = JwtToken::where('user_id', $user->id)->where('token_title', 'Login token')->first();
+
+            if ($jwtToken)
+                $jwtToken->delete();
+
+            $requestToken = JWTAuth::parseToken();
+            $requestToken->invalidate();
+            $deletableUser = User::where('id', $user->id)->first();
+
+            if ($deletableUser)
+                $deletableUser->delete();
+
+            return response()->json([
+                'message' => 'User ' . $userEmail . ' deleted successfully',
+                'status' => 'success',
+            ], 200);
+        } else
+            return response()->json([
+                'message' => 'User not found',
+                'status' => 'error',
+            ], 422);
+    }
+    /**
+     * JSON response.
+     *
+     * @return JsonResponse|array<mixed>
+     */
+    public function edit(EditUserRequest $request)
+    {
+        $user = JWTAuth::user();
+
+        $requestData = $request->all();
+        if ($user instanceof User) {
+            $changedFields = array_diff_assoc($requestData, $user->toArray());
+
+            if (!empty($changedFields)) {
+                if (array_key_exists('password', $changedFields)) {
+                    $changedFields['password'] = Hash::make($changedFields['password']);
+                    $changedFields['password_confirmation'] = Hash::make($changedFields['password_confirmation']);
+                }
+                $user->update($changedFields);
+            }
+
+            return response()->json([
+                'message' => 'User ' . $user->email . ' updated successfully',
+                'status' => 'success',
+            ], 200);
+        } else
+            return response()->json([
+                'message' => 'User not found',
+                'status' => 'error',
+            ], 422);
     }
 }

@@ -19,7 +19,7 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
      *
      * @var array<int, string>
      */
-    protected array $fillable = [
+    protected $fillable = [
         'first_name',
         'last_name',
         'email',
@@ -35,7 +35,7 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
      *
      * @var array<int, string>
      */
-    protected array $hidden = ['password', 'uuid', 'is_admin'];
+    protected $hidden = ['password', 'uuid', 'is_admin'];
     /**
      * Define a one-to-one relationship with the File model.
      *
