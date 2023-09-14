@@ -20,7 +20,13 @@ It may take some time... so we wait.
 
 ## Environment Variables
 
-To run this project, you will need to create your .env file and add the following environment variables to it
+To run this project, you will need to create your .env file running this command:
+
+```bash
+cp .env.example .env
+```
+
+I proided a secret key for the app, but if someone want's to use the project in the future needs to generate himself a new key:
 
 `JWT_SECRET` => This should be a random string with letters and numbers
 
@@ -29,7 +35,15 @@ To run this project, you will need to create your .env file and add the followin
 For the database to be created and the basic data to be added, you need to run in the root of your project:
 
 ```bash
-php artisan migrate --seed
+php artisan migrate:refresh --seed
+```
+
+## Start the application
+
+For the routes to work, you need to run in the root of your project:
+
+```bash
+php artisan serve
 ```
 
 Now the application routes should work as expected.
@@ -44,12 +58,12 @@ Install package as a local dependency with composer:
   composer require rpalk/exchange
 ```
 
-Now you can access the packages route in your project:
+Now you can access the package route in your project:
 
 ## API Reference
 
 ```http
-  GET {{base_url}}/api/v1/exchange/currency
+  GET https://127.0.0.1:8000/api/v1/exchange/currency
 ```
 
 | Parameter  | Type      | Description                                 |
