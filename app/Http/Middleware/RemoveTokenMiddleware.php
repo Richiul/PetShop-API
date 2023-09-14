@@ -15,9 +15,7 @@ class RemoveTokenMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        
         $request->headers->remove('Authorization');
-        
         return $next($request);
     }
 }

@@ -18,19 +18,9 @@ class EditUserRequest extends FormRequest
             JWTAuth::parseToken()->authenticate();
             return true;
         } catch (\Exception $e) {
-            
+
             return false;
         }
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422)
-        );
     }
 
     /**
@@ -41,13 +31,23 @@ class EditUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => ['required','string','max:255'],
-            'last_name' => ['required','string','max:255'],
-            'email' => ['required','string','email','max:255'],
-            'password' => ['required','string','min:6'],
-            'password_confirmation' => ['required','string','min:6','same:password'],
-            'address' => ['required','string','max:255'],
-            'phone_number' => ['required','string','max:255']
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:6'],
+            'password_confirmation' => ['required', 'string', 'min:6', 'same:password'],
+            'address' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:255'],
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

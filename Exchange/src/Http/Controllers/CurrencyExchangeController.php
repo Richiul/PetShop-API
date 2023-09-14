@@ -11,22 +11,23 @@ use SimpleXMLElement;
 
 class CurrencyExchangeController extends Controller
 {
-
     public function exchange(Request $request)
     {
-        
-        $validator = Validator::make($request->toArray(),[
-            'amount' => ['integer','required'],
-            'currency' => ['string','required']
-        ]
-    );
+
+        $validator = Validator::make(
+            $request->toArray(),
+            [
+                'amount' => ['integer', 'required'],
+                'currency' => ['string', 'required']
+            ]
+        );
 
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
-    
-        $response = Http::get("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
-    
+
+        $response = Http::get('https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml');
+
         // Check if the request was successful (status code 200)
         if ($response->ok()) {
             $xmlContent = $response->body();
@@ -34,11 +35,9 @@ class CurrencyExchangeController extends Controller
             $xml = new SimpleXMLElement($xmlContent);
 
             $exchangeRates = $xml->Cube->Cube;
-            foreach($exchangeRates->Cube as $CubeCurrency)
-            {
-                if($CubeCurrency['currency'] == $request->currency)
-                {
-                    $result = round($request->amount * $CubeCurrency['rate'],2);
+            foreach ($exchangeRates->Cube as $CubeCurrency) {
+                if ($CubeCurrency['currency'] == $request->currency) {
+                    $result = round($request->amount * $CubeCurrency['rate'], 2);
                 }
             }
             return $result;
@@ -47,5 +46,4 @@ class CurrencyExchangeController extends Controller
             return response('API request failed', $response->status());
         }
     }
-    
 }

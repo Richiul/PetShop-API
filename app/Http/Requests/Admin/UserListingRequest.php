@@ -22,16 +22,6 @@ class UserListingRequest extends FormRequest
         }
     }
 
-    protected function failedValidation(Validator $validator)
-    {
-            throw new HttpResponseException(
-                response()->json([
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors(),
-                ], 422)
-            );
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -40,16 +30,26 @@ class UserListingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => ['integer','nullable'],
-            'limit' => ['integer','nullable'],
-            'desc' => ['in:true,false,0,1','nullable'],
-            'sortBy' => ['string','nullable'],
-            'first_name' => ['string','nullable'],
-            'email' => ['string','nullable'],
-            'phone' => ['string','nullable'],
-            'address' => ['text','nullable'],
-            'created_at' => ['date','nullable'],
-            'marketing'=>['in:true,false,0,1','nullable']
+            'page' => ['integer', 'nullable'],
+            'limit' => ['integer', 'nullable'],
+            'desc' => ['in:true,false,0,1', 'nullable'],
+            'sortBy' => ['string', 'nullable'],
+            'first_name' => ['string', 'nullable'],
+            'email' => ['string', 'nullable'],
+            'phone' => ['string', 'nullable'],
+            'address' => ['text', 'nullable'],
+            'created_at' => ['date', 'nullable'],
+            'marketing' => ['in:true,false,0,1', 'nullable']
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

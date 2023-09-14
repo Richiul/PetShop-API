@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['title','slug','content','metadata'];
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array
+     */
+    protected array $fillable = ['title', 'slug', 'content', 'metadata'];
     /**
      * Define a one-to-one relationship with the File model.
      *
@@ -17,6 +21,6 @@ class Post extends Model
      */
     public function image()
     {
-        return $this->hasOne(File::class,'metadata.image','uuid');
+        return $this->hasOne(File::class, 'metadata.image', 'uuid');
     }
 }

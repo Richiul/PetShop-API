@@ -19,7 +19,7 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
      *
      * @var array<int, string>
      */
-    protected $fillable = [
+    protected array $fillable = [
         'first_name',
         'last_name',
         'email',
@@ -28,10 +28,14 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
         'phone_number',
         'uuid',
         'password',
-        'is_admin'
+        'is_admin',
     ];
-
-    protected $hidden = ['password','uuid','is_admin'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected array $hidden = ['password', 'uuid', 'is_admin'];
     /**
      * Define a one-to-one relationship with the File model.
      *
@@ -39,7 +43,7 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
      */
     public function file(): HasOne
     {
-        return $this->hasOne(File::class,'uuid','avatar');
+        return $this->hasOne(File::class, 'uuid', 'avatar');
     }
     /**
      * Define a one-to-one relationship with the File model.
@@ -66,13 +70,13 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
      */
     public function passwordReset(): HasOne
     {
-        return $this->hasOne(PasswordReset::class,'email','email');
+        return $this->hasOne(PasswordReset::class, 'email', 'email');
     }
 
     /**
      * Get the additional claims to be added to the JWT payload.
      *
-     * @return array<mixed>
+     * @return array<string>
      */
     public function getJWTIdentifier(): mixed
     {
@@ -82,11 +86,10 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
     /**
      * Get the additional claims to be added to the JWT payload.
      *
-     * @return array<mixed>
+     * @return array<string>
      */
-    public function getJWTCustomClaims():mixed
+    public function getJWTCustomClaims(): mixed
     {
         return ['uuid' => $this->uuid];
     }
-
 }

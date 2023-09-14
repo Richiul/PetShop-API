@@ -10,7 +10,7 @@ class OrderStatus extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title','slug'];
+    protected $fillable = ['title', 'slug'];
     /**
      * Define a one-to-one relationship with the File model.
      *

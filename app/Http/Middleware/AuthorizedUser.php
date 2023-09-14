@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\JwtToken;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -17,15 +16,13 @@ class AuthorizedUser
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = User::where('email',$request->email)->first();
-        if($user)
-        {
-            if($user->is_admin)
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            if ($user->is_admin)
                 return response()->json([
                     'message' => 'Admins cannot login here.'
                 ], 401);
         }
-        
         return $next($request);
     }
 }

@@ -16,16 +16,6 @@ class ResetPasswordRequest extends FormRequest
         return true;
     }
 
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422)
-        );
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -34,10 +24,20 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['required','string'],
-            'email' => ['required','string','email','max:255','unique:users'],
-            'password' => ['required','string','min:6'],
-            'password_confirmation' => ['required','string','min:6','same:password'],
+            'token' => ['required', 'string'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:6'],
+            'password_confirmation' => ['required', 'string', 'min:6', 'same:password'],
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

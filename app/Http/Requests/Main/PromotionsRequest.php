@@ -22,11 +22,11 @@ class PromotionsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'page' => ['nullable','integer'],
-            'limit' => ['nullable','integer'],
-            'sortBy' => ['nullable','string'],
-            'desc' => ['nullable','in:0,1,true,false'],
-            'valid' => ['nullable','in:0,1,true,false'],
+            'page' => ['nullable', 'integer'],
+            'limit' => ['nullable', 'integer'],
+            'sortBy' => ['nullable', 'string'],
+            'desc' => ['nullable', 'in:0,1,true,false'],
+            'valid' => ['nullable', 'in:0,1,true,false'],
         ];
     }
 }

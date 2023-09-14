@@ -8,24 +8,23 @@ use App\Http\Requests\Admin\UserListingRequest;
 use App\Http\Requests\User\RegisterRequest;
 use App\Models\JwtToken;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
 {
-
     public function __construct()
     {
-        $this->middleware(['jwt.auth','authorized.admin'], ['except' => ['login', 'register']]);
+        $this->middleware(['jwt.auth', 'authorized.admin'], ['except' => ['login', 'register']]);
     }
-/**
- * JSON response.
- *
- * @return JsonResponse|array<mixed>
- */
+    /**
+     * JSON response.
+     *
+     * @return JsonResponse|array<mixed>
+     */
     public function register(RegisterRequest $request)
     {
 
@@ -46,7 +45,7 @@ class AdminController extends Controller
         ]);
 
         $token = $this->createJwtTokenDb($user);
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Admin created successfully',
@@ -57,123 +56,118 @@ class AdminController extends Controller
             ]
         ]);
     }
-/**
- * JSON response.
- *
- * @return JsonResponse|array<mixed>
- */
-        public function index(UserListingRequest $request)
-        {
-            
-            $page = $request->page  ?? 1;
+    /**
+     * JSON response.
+     *
+     * @return JsonResponse|array<mixed>
+     */
+    public function index(UserListingRequest $request)
+    {
 
-            $limit = $request->limit ?? 15;
-            $nonAdmins = User::where('is_admin',false);
-            
-            $maxPages = round($nonAdmins->count() / $limit) < 1 ? 1 : round($nonAdmins->count() / $limit);
+        $page = $request->page ?? 1;
 
-            if($page > $maxPages)
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'The database doesn\'t have that many users.'
-                ],422);
-            
-            $sortBy = $request->sortBy ?? 'id';
-            $desc = (!$request->desc || $request->desc == 'true' || $request->desc == 1) ? true : false;
-            
-            if($request->first_name)
-                $nonAdmins = $nonAdmins->where('first_name','like','%'.$request->first_name.'%');
-            
-            if($request->email)
-                $nonAdmins = $nonAdmins->where('email','like','%'.$request->email.'%');
-            
-            if($request->phone)
-                $nonAdmins = $nonAdmins->where('phone','like','%'.$request->phone.'%');
-            
-            if($request->address)
-                $nonAdmins = $nonAdmins->where('address','like','%'.$request->address.'%');
+        $limit = $request->limit ?? 15;
+        $nonAdmins = User::where('is_admin', false);
 
-            if($request->created_at)
-                $nonAdmins = $nonAdmins->where('created_at',$request->created_at);
+        $maxPages = round($nonAdmins->count() / $limit) < 1 ? 1 : round($nonAdmins->count() / $limit);
 
-            if($request->is_marketing)
-                $nonAdmins = $nonAdmins->where('is_marketing',$request->is_marketing);
-
-            $users = $nonAdmins->orderBy($sortBy,($desc) ? 'desc' : 'asc')->paginate($limit);
+        if ($page > $maxPages)
             return response()->json([
-                'status' => 'success',
-                'message' => 'Users listed successfully.',
-                'data' => $users
-            ],200);
-        }
-/**
- * JSON response.
- *
- * @return JsonResponse|array<mixed>
- */
-        public function edit(EditUserFromAdminRequest $request, string $uuid)
-        {
-            
-        $user = User::where('uuid',$uuid)->first();
+                'status' => 'error',
+                'message' => 'The database doesn\'t have that many users.'
+            ], 422);
 
-        if(!$user)
+        $sortBy = $request->sortBy ?? 'id';
+        $desc = (!$request->desc || $request->desc == 'true' || $request->desc == 1) ? true : false;
+
+        if ($request->first_name)
+            $nonAdmins = $nonAdmins->where('first_name', 'like', '%' . $request->first_name . '%');
+
+        if ($request->email)
+            $nonAdmins = $nonAdmins->where('email', 'like', '%' . $request->email . '%');
+
+        if ($request->phone)
+            $nonAdmins = $nonAdmins->where('phone', 'like', '%' . $request->phone . '%');
+
+        if ($request->address)
+            $nonAdmins = $nonAdmins->where('address', 'like', '%' . $request->address . '%');
+
+        if ($request->created_at)
+            $nonAdmins = $nonAdmins->where('created_at', $request->created_at);
+
+        if ($request->is_marketing)
+            $nonAdmins = $nonAdmins->where('is_marketing', $request->is_marketing);
+
+        $users = $nonAdmins->orderBy($sortBy, ($desc) ? 'desc' : 'asc')->paginate($limit);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Users listed successfully.',
+            'data' => $users
+        ], 200);
+    }
+    /**
+     * JSON response.
+     *
+     * @return JsonResponse|array<mixed>
+     */
+    public function edit(EditUserFromAdminRequest $request, string $uuid)
+    {
+
+        $user = User::where('uuid', $uuid)->first();
+
+        if (!$user)
             return response()->json([
                 'status' => 'error',
                 'message' => 'User not found.'
-            ],404);
+            ], 404);
 
         $requestData = $request->all();
 
-        $changedFields = array_diff_assoc($requestData,$user->toArray());
+        $changedFields = array_diff_assoc($requestData, $user->toArray());
 
-        if(!empty($changedFields))
-        {
-            
-            if(array_key_exists('password',$changedFields))
-            {
+        if (is_array($changedFields) && !empty($changedFields)) {
+
+            if (array_key_exists('password', $changedFields)) {
                 $changedFields['password'] = Hash::make($changedFields['password']);
                 $changedFields['password_confirmation'] = Hash::make($changedFields['password_confirmation']);
             }
 
-                $user->update($changedFields);
+            $user->update($changedFields);
         }
 
         return response()->json([
-            'message' => 'User '.$user->email.' updated successfully',
+            'message' => 'User ' . $user->email . ' updated successfully',
             'data' => $user,
             'status' => 'success'
-        ],200);
-        }
-/**
- * JSON response.
- *
- * @return JsonResponse|array<mixed>
- */
-        public function delete(DeleteUserFromAdminRequest $request,string $uuid)
-        {
-            $user = User::where('uuid',$uuid)->first();
-            
-            if(!$user)
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'User not found.'
-                ],404);
+        ], 200);
+    }
+    /**
+     * JSON response.
+     *
+     * @return JsonResponse|array<mixed>
+     */
+    public function delete(string $uuid)
+    {
+        $user = User::where('uuid', $uuid)->first();
 
-            $userEmail = $user->email;
-            if($token = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first())
-            {
-                $token = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first();
-                if($token)
-                    $token->delete();
-            }
-            
-            
-            $user->delete();
-    
+        if (!$user)
             return response()->json([
-                'message' => 'User '.$userEmail.' deleted successfully',
-                'status' => 'success',
-            ],200);
+                'status' => 'error',
+                'message' => 'User not found.'
+            ], 404);
+
+        $userEmail = $user->email;
+        if (JwtToken::where('user_id', $user->id)->where('token_title', 'Login token')->first()) {
+            $token = JwtToken::where('user_id', $user->id)->where('token_title', 'Login token')->first();
+            if ($token)
+                $token->delete();
         }
-    
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User ' . $userEmail . ' deleted successfully',
+            'status' => 'success',
+        ], 200);
+    }
 }

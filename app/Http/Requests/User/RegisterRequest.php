@@ -16,16 +16,6 @@ class RegisterRequest extends FormRequest
         return true;
     }
 
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422)
-        );
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -34,15 +24,24 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => ['required','string','max:255'],
-            'last_name' => ['required','string','max:255'],
-            'email' => ['required','string','email','max:255','unique:users'],
-            'password' => ['required','string','min:6'],
-            'password_confirmation' => ['required','string','min:6','same:password'],
-            'address' => ['required','string','max:255'],
-            'phone_number' => ['required','string','max:255'],
-            'avatar' => ['nullable','string'],
-            'is_marketing' => ['nullable','boolean']
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:6'],
+            'password_confirmation' => ['required', 'string', 'min:6', 'same:password'],
+            'address' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:255'],
+            'avatar' => ['nullable', 'string'],
+            'is_marketing' => ['nullable', 'boolean'],
         ];
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

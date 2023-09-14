@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['uuid','title','slug'];
+    protected $fillable = ['uuid', 'title', 'slug'];
     /**
      * Define a one-to-one relationship with the File model.
      *
@@ -17,6 +17,6 @@ class Category extends Model
      */
     public function product()
     {
-        return $this->belongsTo(Product::class,'category_id','uuid');
+        return $this->belongsTo(Product::class, 'category_id', 'uuid');
     }
 }

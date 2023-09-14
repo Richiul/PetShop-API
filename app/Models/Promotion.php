@@ -9,8 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Promotion extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['content','metadata'];
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @var array
+     */
+    protected array $fillable = ['content', 'metadata'];
     /**
      * Define a one-to-one relationship with the File model.
      *
@@ -18,6 +22,6 @@ class Promotion extends Model
      */
     public function image(): HasOne
     {
-        return $this->hasOne(File::class,'metadata.image','uuid');
+        return $this->hasOne(File::class, 'metadata.image', 'uuid');
     }
 }

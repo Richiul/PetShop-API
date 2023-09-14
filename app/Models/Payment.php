@@ -10,13 +10,13 @@ class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type','details'];
+    protected $fillable = ['type', 'details'];
     /**
      * Define a one-to-one relationship with the File model.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Order,Payment>
      */
-    public function order():BelongsTo
+    public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }

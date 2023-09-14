@@ -31,7 +31,3 @@ class CurrencyExchangeTest extends TestCase
         }
     }
 }
-
-
-
-

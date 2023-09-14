@@ -10,17 +10,17 @@ class PasswordReset extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['email','token'];
-
     public $timestamps = false;
+
+    protected $fillable = ['email', 'token'];
+
     /**
      * Define a one-to-one relationship with the File model.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User,PasswordReset>
      */
-    public function user():BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'email','email');
+        return $this->belongsTo(User::class, 'email', 'email');
     }
-
 }

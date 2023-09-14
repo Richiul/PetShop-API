@@ -9,7 +9,7 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['products','address','delivery_fee','amount'];
+    protected $fillable = ['products', 'address', 'delivery_fee', 'amount'];
     /**
      * Define a one-to-one relationship with the File model.
      *
@@ -43,7 +43,7 @@ class Order extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<Product>
      */
     public function products()
-{
-    return $this->hasMany(Product::class,'products.product','uuid');
-}
+    {
+        return $this->hasMany(Product::class, 'products.product', 'uuid');
+    }
 }

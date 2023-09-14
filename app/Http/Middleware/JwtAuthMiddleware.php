@@ -18,7 +18,6 @@ class JwtAuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        
         try {
             $user = JWTAuth::parseToken()->authenticate();
 
@@ -31,7 +30,7 @@ class JwtAuthMiddleware
                 return response()->json(['message' => 'Invalid token'], 401);
             } elseif ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
                 $requestToken = JWTAuth::parseToken();
-                $dbtToken = JwtToken::where('unique_id',$requestToken)->first();
+                $dbtToken = JwtToken::where('unique_id', $requestToken)->first();
 
                 if ($dbtToken) {
                     $dbtToken->delete();
@@ -40,9 +39,8 @@ class JwtAuthMiddleware
                 $requestToken->invalidate();
 
                 return response()->json(['message' => 'Token expired'], 401);
-            } else {
-                return response()->json(['message' => 'Authorization token not found'], 401);
             }
+            return response()->json(['message' => 'Authorization token not found'], 401);
         }
 
         return $next($request);
