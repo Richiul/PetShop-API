@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
 {
@@ -20,12 +21,16 @@ class AdminController extends Controller
     {
         $this->middleware(['jwt.auth','authorized.admin'], ['except' => ['login', 'register']]);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function register(RegisterRequest $request)
     {
 
         $user = User::create([
-            'uuid' => Uuid::uuid4()->toString() ?? '',
+            'uuid' => Uuid::uuid4()->toString(),
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
@@ -34,7 +39,7 @@ class AdminController extends Controller
             'address' => $request->address,
             'phone_number' => $request->phone_number,
             'is_admin' => 1,
-            'avatar' => $request->avatar ?? '',
+            'avatar' => $request->avatar,
             'is_marketing' => $request->is_marketing ?? 0,
             'created_at' => now(),
             'updated_at' => now(),
@@ -52,7 +57,11 @@ class AdminController extends Controller
             ]
         ]);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
         public function index(UserListingRequest $request)
         {
             
@@ -97,8 +106,12 @@ class AdminController extends Controller
                 'data' => $users
             ],200);
         }
-
-        public function edit(EditUserFromAdminRequest $request, $uuid)
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+        public function edit(EditUserFromAdminRequest $request, string $uuid)
         {
             
         $user = User::where('uuid',$uuid)->first();
@@ -131,8 +144,12 @@ class AdminController extends Controller
             'status' => 'success'
         ],200);
         }
-
-        public function delete(DeleteUserFromAdminRequest $request,$uuid)
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+        public function delete(DeleteUserFromAdminRequest $request,string $uuid)
         {
             $user = User::where('uuid',$uuid)->first();
             
@@ -145,8 +162,9 @@ class AdminController extends Controller
             $userEmail = $user->email;
             if($token = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first())
             {
-                $token = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first()->delete();
-                $requestToken = JWTAuth::fromUser($user)->invalidate();
+                $token = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first();
+                if($token)
+                    $token->delete();
             }
             
             

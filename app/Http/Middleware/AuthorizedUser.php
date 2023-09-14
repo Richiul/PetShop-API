@@ -18,11 +18,13 @@ class AuthorizedUser
     public function handle(Request $request, Closure $next): Response
     {
         $user = User::where('email',$request->email)->first();
-        
-        if($user->is_admin)
-            return response()->json([
-                'message' => 'Admins cannot login here.'
-            ], 401);
+        if($user)
+        {
+            if($user->is_admin)
+                return response()->json([
+                    'message' => 'Admins cannot login here.'
+                ], 401);
+        }
         
         return $next($request);
     }

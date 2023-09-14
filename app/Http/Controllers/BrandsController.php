@@ -11,6 +11,7 @@ use App\Models\Brand;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Http\JsonResponse;
 
 class BrandsController extends Controller
 {
@@ -19,7 +20,11 @@ class BrandsController extends Controller
     {
         $this->middleware(['auth:api','authorized.admin'], ['except' => ['index', 'brand']]);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function index(ViewBrandsRequest $request){
             $page = $request->page  ?? 1;
 
@@ -46,8 +51,12 @@ class BrandsController extends Controller
                 'data' => $finalBrands
             ],200);
     }
-
-    public function brand(BrandRequest $request,$uuid){
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+    public function brand(BrandRequest $request,string $uuid){
 
         if($uuid)
             $brand = Brand::where('uuid',$uuid)->first();
@@ -69,8 +78,12 @@ class BrandsController extends Controller
                 'message' => 'No brand with this uuid.'
             ],422);
     }
-
-    public function edit(EditBrandRequest $request, $uuid)
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+    public function edit(EditBrandRequest $request, string $uuid)
         {
             
         if($uuid)
@@ -103,8 +116,12 @@ class BrandsController extends Controller
             'status' => 'success'
         ],200);
         }
-
-        public function delete(DeleteBrandRequest $request,$uuid)
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+        public function delete(DeleteBrandRequest $request, string $uuid)
         {
             if($uuid)
                 $brand = Brand::where('uuid',$uuid)->first();
@@ -127,11 +144,15 @@ class BrandsController extends Controller
                 'status' => 'success',
             ],200);
         }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
         public function create(CreateBrandRequest $request){
             try{
                 Brand::create([
-                    'uuid' => Uuid::uuid4()->toString() ?? '',
+                    'uuid' => Uuid::uuid4()->toString(),
                     'title' => $request->title,
                     'slug' => Str::slug($request->title)
                 ]);

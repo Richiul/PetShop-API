@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -30,43 +32,59 @@ class User extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubjec
     ];
 
     protected $hidden = ['password','uuid','is_admin'];
-
-    public function file()
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<File>
+     */
+    public function file(): HasOne
     {
         return $this->hasOne(File::class,'uuid','avatar');
     }
-
-    public function order()
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Order>
+     */
+    public function order(): HasMany
     {
         return $this->hasMany(Order::class);
     }
-
-    public function token()
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<JwtToken>
+     */
+    public function token(): HasOne
     {
         return $this->hasOne(JwtToken::class);
     }
-
-    public function passwordReset()
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<PasswordReset>
+     */
+    public function passwordReset(): HasOne
     {
         return $this->hasOne(PasswordReset::class,'email','email');
     }
 
     /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
+     * Get the additional claims to be added to the JWT payload.
      *
-     * @return mixed
+     * @return array<mixed>
      */
-    public function getJWTIdentifier()
+    public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
     }
 
-     /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
+    /**
+     * Get the additional claims to be added to the JWT payload.
      *
-     * @return array
+     * @return array<mixed>
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims():mixed
     {
         return ['uuid' => $this->uuid];
     }

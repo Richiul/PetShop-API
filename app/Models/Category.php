@@ -10,7 +10,11 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = ['uuid','title','slug'];
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Product,Category>
+     */
     public function product()
     {
         return $this->belongsTo(Product::class,'category_id','uuid');

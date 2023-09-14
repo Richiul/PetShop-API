@@ -11,7 +11,11 @@ class OrderStatus extends Model
     use HasFactory;
 
     protected $fillable = ['title','slug'];
-
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Order,OrderStatus>
+     */
     public function order()
     {
         return $this->belongsTo(Order::class);

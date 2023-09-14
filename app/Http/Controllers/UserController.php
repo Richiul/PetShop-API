@@ -13,6 +13,7 @@ use App\Models\JwtToken;
 use App\Models\PasswordReset;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Str;
@@ -23,12 +24,16 @@ class UserController extends Controller
     {
         $this->middleware(['jwt.auth',], ['except' => ['login', 'register','forgotPassword','resetPasswordToken']]);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function register(RegisterRequest $request)
     {
 
         $user = User::create([
-            'uuid' => Uuid::uuid4()->toString() ?? '',
+            'uuid' => Uuid::uuid4()->toString(),
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
@@ -54,7 +59,11 @@ class UserController extends Controller
             ]
         ]);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function forgotPassword(ForgotPasswordRequest $request)
     {
         $exists = User::where('email',$request->email)->first();
@@ -79,7 +88,11 @@ class UserController extends Controller
             'message' => 'Email doesn\'t exist',
         ],422);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function resetPasswordToken(ResetPasswordRequest $request)
     {
         $passwordReset = PasswordReset::where('email',$request->email)->first();
@@ -88,27 +101,43 @@ class UserController extends Controller
         {
         $user = $passwordReset->user()->first();
 
-        if($request->password == $request->password_confirmation)
-        {
-            $user->password = Hash::make($request->password);
-            $user->save();
+            if($request->password == $request->password_confirmation)
+            {
+                if($user)
+                {
+                    $user->password = Hash::make($request->password);
+                    $user->save();
+                }
+                
+                $passwordReset = PasswordReset::where('email',$request->email)->first();
 
-            PasswordReset::where('email',$request->email)->first()->delete();
-
-            return response()->json([
-                'message' => 'Password reset successfully',
-            ],200);
-        }
+                if($passwordReset)
+                    $passwordReset->delete();
+                else
+                    return response()->json([
+                        'message' => 'You don\'t have a valid resetting token.',
+                    ],401);
+            
+                return response()->json([
+                    'message' => 'Password reset successfully',
+                ],200);
+            }
+        
         else
         return response()->json([
             'message' => 'Password doesn\'t match',
         ],422);
-    }else
+    }
+    else
         return response()->json([
             'message' => 'You don\'t have a valid resetting token.',
         ],401);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function index()
     {
         
@@ -118,28 +147,51 @@ class UserController extends Controller
         ],200);
         
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function delete(DeleteUserRequest $request)
     {
         $user = JWTAuth::user();
+        if($user instanceof User)
+        {
         $userEmail = $user->email;
-        JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first()->delete();
+        $jwtToken = JwtToken::where('user_id',$user->id)->where('token_title','Login token')->first();
+
+        if($jwtToken)
+            $jwtToken->delete();
+
         $requestToken = JWTAuth::parseToken();
         $requestToken->invalidate();
-        User::where('id',$user->id)->first()->delete();
+        $deletableUser = User::where('id',$user->id)->first();
+
+        if($deletableUser)
+            $deletableUser->delete();
 
         return response()->json([
             'message' => 'User '.$userEmail.' deleted successfully',
             'status' => 'success',
         ],200);
+    }else
+    return response()->json([
+        'message' => 'User not found',
+        'status' => 'error',
+    ],422);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function edit(EditUserRequest $request)
     {
         $user = JWTAuth::user();
 
         $requestData = $request->all();
-
+        if($user instanceof User)
+        {
         $changedFields = array_diff_assoc($requestData,$user->toArray());
 
         if(!empty($changedFields))
@@ -156,6 +208,11 @@ class UserController extends Controller
             'message' => 'User '.$user->email.' updated successfully',
             'status' => 'success',
         ],200);
+    }else
+        return response()->json([
+            'message' => 'User not found',
+            'status' => 'error',
+        ],422);
     }
 
 }

@@ -33,7 +33,9 @@ class JwtAuthMiddleware
                 $requestToken = JWTAuth::parseToken();
                 $dbtToken = JwtToken::where('unique_id',$requestToken)->first();
 
-                $dbtToken->delete();
+                if ($dbtToken) {
+                    $dbtToken->delete();
+                }
 
                 $requestToken->invalidate();
 

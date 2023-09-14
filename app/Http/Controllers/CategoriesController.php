@@ -11,6 +11,7 @@ use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Http\JsonResponse;
 
 class CategoriesController extends Controller
 {
@@ -19,7 +20,11 @@ class CategoriesController extends Controller
     {
         $this->middleware(['auth:api','authorized.admin'], ['except' => ['index', 'category']]);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function index(CategoryViewCategoriesRequest $request){
             $page = $request->page  ?? 1;
 
@@ -46,8 +51,12 @@ class CategoriesController extends Controller
                 'data' => $finalCategories
             ],200);
     }
-
-    public function category(CategoryCategoryRequest $request,$uuid){
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+    public function category(CategoryCategoryRequest $request,string $uuid){
 
         if($uuid)
             $category = Category::where('uuid',$uuid)->first();
@@ -69,8 +78,12 @@ class CategoriesController extends Controller
                 'message' => 'No category with this uuid.'
             ],422);
     }
-
-    public function edit(CategoryEditCategoryRequest $request, $uuid)
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+    public function edit(CategoryEditCategoryRequest $request, string $uuid)
         {
             
         if($uuid)
@@ -103,8 +116,12 @@ class CategoriesController extends Controller
             'status' => 'success'
         ],200);
         }
-
-        public function delete(CategoryDeleteCategoryRequest $request,$uuid)
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+        public function delete(CategoryDeleteCategoryRequest $request,string $uuid)
         {
             if($uuid)
                 $category = Category::where('uuid',$uuid)->first();
@@ -127,11 +144,15 @@ class CategoriesController extends Controller
                 'status' => 'success',
             ],200);
         }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
         public function create(CategoryCreateCategoryRequest $request){
             try{
                 $category = Category::create([
-                    'uuid' => Uuid::uuid4()->toString() ?? '',
+                    'uuid' => Uuid::uuid4()->toString(),
                     'title' => $request->title,
                     'slug' => Str::slug($request->title)
                 ]);

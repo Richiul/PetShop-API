@@ -4,14 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Promotion extends Model
 {
     use HasFactory;
 
     protected $fillable = ['content','metadata'];
-
-    public function image()
+    /**
+     * Define a one-to-one relationship with the File model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<File>
+     */
+    public function image(): HasOne
     {
         return $this->hasOne(File::class,'metadata.image','uuid');
     }

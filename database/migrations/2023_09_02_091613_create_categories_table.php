@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id()->unsigned();
-            $table->uuid();
+            $table->uuid()->default('');
             $table->string('title');
             $table->string('slug');
             $table->timestamps();

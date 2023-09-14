@@ -8,9 +8,15 @@ use App\Http\Requests\Main\PromotionsRequest;
 use App\Models\Post;
 use App\Models\Promotion;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class MainPageController extends Controller
 {
+    /**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function index(PostsRequest $request){
         
             $page = $request->page  ?? 1;
@@ -38,8 +44,12 @@ class MainPageController extends Controller
                 'data' => $finalPosts
             ],200);
     }
-
-    public function post(PostRequest $request,$uuid){
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
+    public function post(PostRequest $request,string $uuid){
 
         if($uuid)
             $post = Post::where('uuid',$uuid)->first();
@@ -61,7 +71,11 @@ class MainPageController extends Controller
                 'message' => 'No post with this uuid.'
             ],422);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function promotions(PromotionsRequest $request){
 
             $page = $request->page  ?? 1;
@@ -70,7 +84,7 @@ class MainPageController extends Controller
 
             $valid = (!$request->valid || $request->valid == 'true' || $request->valid == 1) ? true : false;
             
-            if($valid)
+            if($valid == true)
                 {
                     $promotions = Promotion::where('metadata->valid_from','<',now())->where('metadata->valid_to','>',now());
                 }
@@ -78,12 +92,6 @@ class MainPageController extends Controller
                 {
                     $promotions = Promotion::where('metadata->valid_from','>',now())->where('metadata->valid_to','<',now());
                 }
-                    
-            if(empty($promotions))
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No promotion found.'
-                ],422);
 
             $maxPages = round($promotions->count() / $limit) < 1 ? 1  : round($promotions->count() / $limit);
 

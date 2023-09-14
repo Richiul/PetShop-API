@@ -18,21 +18,23 @@ class AuthorizedAdmin
     public function handle(Request $request, Closure $next): Response
     {
         $bearerToken = $request->header('authorization') ?? null;
-        
+        $isValid = null;
+        $user =null;
         if($bearerToken != null)
         {
             $bearerToken = explode(' ',$bearerToken);
             $token = implode(' ', array_slice($bearerToken, 1));
         
-        $isValid = JwtToken::where('unique_id',$token)->first();
+            $isValid = JwtToken::where('unique_id',$token)->first();
         }
-        
-        $user = User::where('id',$isValid->user_id)->first();
-        
-        if(!$user->is_admin)
-            return response()->json([
-                'message' => 'Users cannot login here.'
-            ], 401);
+        if($isValid)
+            $user = User::where('id',$isValid->user_id)->first();
+        if($user){
+            if(!$user->is_admin)
+                return response()->json([
+                    'message' => 'Users cannot login here.'
+                ], 401);
+            }
         
         return $next($request);
     }

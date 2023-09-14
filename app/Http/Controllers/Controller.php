@@ -13,12 +13,17 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\JsonResponse;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-    public function createJwtTokenDb($user,$type='Login')
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>|string
+ */
+    public function createJwtTokenDb(User $user,string $type='Login')
     {
         
         if(!JwtToken::where('user_id',$user->id)->first())
@@ -26,14 +31,14 @@ class Controller extends BaseController
         $issuer = ['iss' => env('JWT_ISSUER')];
         $tokenFromUser = JWTAuth::claims($issuer)->fromUser($user);
         $expiresAt = Carbon::now()->addHours(2);
-        JwtToken::create([
-            'user_id'=> $user->id,
-            'unique_id' => $tokenFromUser,
-            'token_title' => $type.' token',
-            'expires_at' => $expiresAt,
-            'last_used_at' => Carbon::now(),
-            'refresheed_at' => Carbon::now()
-        ]);
+            JwtToken::create([
+                'user_id'=> $user->id,
+                'unique_id' => $tokenFromUser,
+                'token_title' => $type.' token',
+                'expires_at' => $expiresAt,
+                'last_used_at' => Carbon::now(),
+                'refresheed_at' => Carbon::now()
+            ]);
         return $tokenFromUser;
     }
         else
@@ -43,7 +48,11 @@ class Controller extends BaseController
         ],401);
     }
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function login(LoginRequest $request)
     {
         $user = User::where('email', $request->email)->first();
@@ -79,16 +88,21 @@ class Controller extends BaseController
             ]
         ]);
     }
-
+/**
+ * JSON response.
+ *
+ * @return JsonResponse|array<mixed>
+ */
     public function logout()
     {
         $user = JWTAuth::user();
         
-        if($user)
+        if($user instanceof User)
         {
         $dbtToken = JwtToken::where('user_id',$user->id)->first();
-        if($dbtToken->token_title == 'Login token')
+        if($dbtToken)
         {
+
 
         $dbtToken->delete();
 
@@ -97,13 +111,16 @@ class Controller extends BaseController
 
         return response()->json([
             'message' => 'Successfully logged out',
-        ]);
+        ],200);
+    }
+    else
+    return response()->json([
+        'message' => 'Token not found logged out',
+    ],422);
+    
     
     }
-}
-else
-{
-    return response()->json(['error'=>'Unauthenticated.']);
-}
+    else
+        return response()->json(['message'=>'Unauthenticated.'],401);
 }
 }
