@@ -62,16 +62,4 @@ Route::controller(CategoriesController::class)->prefix('v1')->group(function() {
     Route::get('/category/{uuid}','category')->name('category.view.category');
 });
 
-Route::controller(OrdersController::class)->prefix('v1')->group(function() {
-    Route::post('order/create','create')->name('order.create');
-    Route::get('/order/{uuid}','order')->name('order.view');
-    Route::put('/order/{uuid}','edit')->name('order.edit');
-    Route::delete('/order/{uuid}','delete')->name('order.delete');
-    Route::get('/order/{uuid}/download','download')->name('order.download');
-    Route::get('/orders','index')->name('orders.view');
-    Route::get('/orders/dashboard','dashboard')->name('orders.dashboard');
-    Route::get('/orders/shipment-locator','shipment')->name('orders.shipment.locator');
-
-});
-
 
