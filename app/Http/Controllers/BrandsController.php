@@ -16,94 +16,59 @@ class BrandsController extends Controller
     {
         $this->middleware(['auth:api', 'authorized.admin'], ['except' => ['index', 'brand']]);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function index(ViewBrandsRequest $request)
     {
         $page = $request->page ?? 1;
-
         $limit = $request->limit ?? 15;
 
-        $brands = Brand::get();
-
-        $maxPages = round($brands->count() / $limit) < 1 ? 1 : round($brands->count() / $limit);
-
-        if ($page > $maxPages)
-            return response()->json([
-                'status' => 'error',
-                'message' => 'The database doesn\'t have that many brands.'
-            ], 422);
-
+        $query = Brand::query();
         $sortBy = $request->sortBy ?? 'id';
-        $desc = (!$request->desc || $request->desc === 'true' || $request->desc === 1) ? true : false;
+        $desc = (!$request->desc || $request->desc == 'true' || $request->desc == 1) ? 'asc' : 'desc';
 
-        $finalBrands = Brand::orderBy($sortBy, ($desc) ? 'desc' : 'asc')->paginate($limit);
+        $brands = $query->orderBy($sortBy, $desc)->paginate($limit);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Brands listed successfully.',
-            'data' => $finalBrands
+            'data' => $brands
         ], 200);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function brand(string $uuid)
     {
+        $brand = $this->findBrandByUuid($uuid);
 
-        if ($uuid)
-            $brand = Brand::where('uuid', $uuid)->first();
-        else
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No uuid found.'
-            ], 422);
-
-        if ($brand)
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Brand printed successfully.',
-                'data' => $brand
-            ], 200);
-        else
+        if (!$brand) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'No brand with this uuid.'
             ], 422);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Brand printed successfully.',
+            'data' => $brand
+        ], 200);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function edit(EditBrandRequest $request, string $uuid)
     {
+        $brand = $this->findBrandByUuid($uuid);
 
-        if ($uuid)
-            $brand = Brand::where('uuid', $uuid)->first();
-        else
+        if (!$brand) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No uuid found.'
+                'message' => 'No brand with this uuid.'
             ], 422);
-
-        if (!$brand)
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Brand not found.'
-            ], 404);
+        }
 
         if ($request->title !== $brand->title) {
             $brand->title = $request->title;
             $brand->slug = Str::slug($request->title);
+            $brand->save();
         }
-
-        $brand->save();
 
         return response()->json([
             'message' => 'Brand with id ' . $brand->id . ' updated successfully',
@@ -111,26 +76,17 @@ class BrandsController extends Controller
             'status' => 'success'
         ], 200);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function delete(string $uuid)
     {
-        if ($uuid)
-            $brand = Brand::where('uuid', $uuid)->first();
-        else
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No uuid found.'
-            ], 422);
+        $brand = $this->findBrandByUuid($uuid);
 
-        if (!$brand)
+        if (!$brand) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Brand not found.'
-            ], 404);
+                'message' => 'No brand with this uuid.'
+            ], 422);
+        }
 
         $brand->delete();
 
@@ -139,11 +95,7 @@ class BrandsController extends Controller
             'status' => 'success',
         ], 200);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function create(CreateBrandRequest $request)
     {
         try {
@@ -163,5 +115,14 @@ class BrandsController extends Controller
             'message' => 'Brand created successfully.',
             'status' => 'success',
         ], 200);
+    }
+
+    private function findBrandByUuid(string $uuid)
+    {
+        if ($uuid) {
+            return Brand::where('uuid', $uuid)->first();
+        }
+
+        return null;
     }
 }

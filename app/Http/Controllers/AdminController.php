@@ -159,8 +159,7 @@ class AdminController extends Controller
         $userEmail = $user->email;
         if (JwtToken::where('user_id', $user->id)->where('token_title', 'Login token')->first()) {
             $token = JwtToken::where('user_id', $user->id)->where('token_title', 'Login token')->first();
-            if ($token)
-                $token->delete();
+            $token->delete();
         }
 
         $user->delete();

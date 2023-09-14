@@ -16,94 +16,42 @@ class CategoriesController extends Controller
     {
         $this->middleware(['auth:api', 'authorized.admin'], ['except' => ['index', 'category']]);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function index(CategoryViewCategoriesRequest $request)
     {
-        $page = $request->page ?? 1;
-
-        $limit = $request->limit ?? 15;
-
-        $categories = Category::get();
-
-        $maxPages = round($categories->count() / $limit) < 1 ? 1 : round($categories->count() / $limit);
-
-        if ($page > $maxPages)
-            return response()->json([
-                'status' => 'error',
-                'message' => 'The database doesn\'t have that many categories.'
-            ], 422);
-
-        $sortBy = $request->sortBy ?? 'id';
-        $desc = (!$request->desc || $request->desc === 'true' || $request->desc === 1) ? true : false;
-
-        $finalCategories = Category::orderBy($sortBy, ($desc) ? 'desc' : 'asc')->paginate($limit);
+        $categories = $this->paginateCategories($request);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Categories listed successfully.',
-            'data' => $finalCategories
+            'data' => $categories
         ], 200);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function category(string $uuid)
     {
+        $category = $this->findCategoryByUuid($uuid);
 
-        if ($uuid)
-            $category = Category::where('uuid', $uuid)->first();
-        else
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No uuid found.'
-            ], 422);
-
-        if ($category)
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Category printed successfully.',
-                'data' => $category
-            ], 200);
-        else
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No category with this uuid.'
-            ], 422);
-    }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
-    public function edit(CategoryEditCategoryRequest $request, string $uuid)
-    {
-
-        if ($uuid)
-            $category = Category::where('uuid', $uuid)->first();
-        else
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No uuid found.'
-            ], 422);
-
-        if (!$category)
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Category not found.'
-            ], 404);
-
-        if ($request->title !== $category->title) {
-            $category->title = $request->title;
-            $category->slug = Str::slug($request->title);
+        if (!$category) {
+            return $this->categoryNotFoundResponse();
         }
 
-        $category->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Category printed successfully.',
+            'data' => $category
+        ], 200);
+    }
+
+    public function edit(CategoryEditCategoryRequest $request, string $uuid)
+    {
+        $category = $this->findCategoryByUuid($uuid);
+
+        if (!$category) {
+            return $this->categoryNotFoundResponse();
+        }
+
+        $this->updateCategory($category, $request->title);
 
         return response()->json([
             'message' => 'Category with id ' . $category->id . ' updated successfully',
@@ -111,26 +59,15 @@ class CategoriesController extends Controller
             'status' => 'success'
         ], 200);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function delete(string $uuid)
     {
-        if ($uuid)
-            $category = Category::where('uuid', $uuid)->first();
-        else
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No uuid found.'
-            ], 422);
+        $category = $this->findCategoryByUuid($uuid);
 
-        if (!$category)
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Category not found.'
-            ], 404);
+        if (!$category) {
+            return $this->categoryNotFoundResponse();
+        }
+
         $category->delete();
 
         return response()->json([
@@ -138,24 +75,13 @@ class CategoriesController extends Controller
             'status' => 'success',
         ], 200);
     }
-    /**
-     * JSON response.
-     *
-     * @return JsonResponse|array<mixed>
-     */
+
     public function create(CategoryCreateCategoryRequest $request)
     {
         try {
-            $category = Category::create([
-                'uuid' => Uuid::uuid4()->toString(),
-                'title' => $request->title,
-                'slug' => Str::slug($request->title)
-            ]);
+            $category = $this->createCategory($request->title);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Couldn\'t create category.',
-                'status' => 'error',
-            ], 401);
+            return $this->categoryCreationFailedResponse();
         }
 
         return response()->json([
@@ -163,5 +89,57 @@ class CategoriesController extends Controller
             'data' => $category,
             'status' => 'success',
         ], 200);
+    }
+
+    private function paginateCategories(CategoryViewCategoriesRequest $request)
+    {
+        $limit = $request->limit ?? 15;
+        $sortBy = $request->sortBy ?? 'id';
+        $desc = (!$request->desc || $request->desc === 'true' || $request->desc === 1) ? 'asc' : 'desc';
+
+        return Category::orderBy($sortBy, $desc)->paginate($limit);
+    }
+
+    private function findCategoryByUuid(string $uuid)
+    {
+        if ($uuid) {
+            return Category::where('uuid', $uuid)->first();
+        }
+
+        return null;
+    }
+
+    private function updateCategory(Category $category, string $title)
+    {
+        if ($title !== $category->title) {
+            $category->title = $title;
+            $category->slug = Str::slug($title);
+            $category->save();
+        }
+    }
+
+    private function createCategory(string $title)
+    {
+        return Category::create([
+            'uuid' => Uuid::uuid4()->toString(),
+            'title' => $title,
+            'slug' => Str::slug($title)
+        ]);
+    }
+
+    private function categoryNotFoundResponse()
+    {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No category with this uuid.'
+        ], 422);
+    }
+
+    private function categoryCreationFailedResponse()
+    {
+        return response()->json([
+            'message' => 'Couldn\'t create category.',
+            'status' => 'error',
+        ], 401);
     }
 }
