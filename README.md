@@ -5,7 +5,7 @@ This project has the purpose of showing my Laravel programming skills.
 To run locally the project you need to first run the following commands
 
 ```bash
-  clone https://github.com/Richiul/PetShop-API.git PetShop-API
+  git clone https://github.com/Richiul/PetShop-API.git PetShop-API
 
   cd PetShop-API/
 ```
